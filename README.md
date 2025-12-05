@@ -1,2 +1,2 @@
-# Kfartz crystalography database
+# Kfartz crystallography database
 ![](public/icon.png)
