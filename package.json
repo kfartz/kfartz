@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write",
-    "formatCheck": "biome format"
+    "format": "biome format --write"
   },
   "dependencies": {
     "@commitlint/config-conventional": "^20.2.0",

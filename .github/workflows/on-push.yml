@@ -3,7 +3,7 @@ name: On push
 run-name: "Build & Checks — ${{ github.ref_name }} by @${{ github.actor }}"
 
 jobs:
-  biome_check:
+  quality_check:
     runs-on: ubuntu-latest
     steps:
       - uses: oven-sh/setup-bun@v1
@@ -11,15 +11,23 @@ jobs:
           bun-version: latest
 
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Install deps
         run: bun i --dev
 
       - name: Linting check
-        run: bun run lint
+        run: bun lint
 
       - name: Formatting check
-        run: bun run formatCheck
+        run: bunx @biomejs/biome format
+      
+      - name: Fetch origin/master
+        run: git fetch origin master
+
+      - name: Commitlint check
+        run: bunx @commitlint/cli -V --from origin/master
 
   build_check:
     runs-on: ubuntu-latest
