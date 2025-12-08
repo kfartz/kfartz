@@ -13,7 +13,7 @@
 
         # VSCodium with Biome extension
         vscodiumWithExtensions = pkgs.vscode-with-extensions.override {
-          vscode = pkgs.vscodium;
+          vscode = pkgs.vscodium-fhs;
           vscodeExtensions = with pkgs.vscode-extensions; [
             # Add other extensions here as needed
           ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
