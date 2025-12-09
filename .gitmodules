@@ -1,0 +1,3 @@
+[submodule "cif_api"]
+	path = cif_api
+	url = https://github.com/COMCIFS/cif_api
