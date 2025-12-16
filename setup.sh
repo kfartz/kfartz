@@ -29,7 +29,7 @@ if [[ ! -d $DEP_DIR ]]; then
 
   pushd automake-$AM_VER
 
-  ./configure --prefix=$PWD/../ && make && make install
+  ./configure --prefix=$PWD/../ && make $MAKEFLAGS && make install
 
   popd
 
@@ -45,13 +45,13 @@ if [[ ! -d $DEP_DIR ]]; then
 
   mkdir icu_build && pushd icu_build
 
-  $ICU_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make && make install
+  $ICU_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make $MAKEFLAGS && make install
 
   popd
 
   mkdir cif_api_build && pushd cif_api_build
 
-  $CIFAPI_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make && make install
+  $CIFAPI_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make $MAKEFLAGS && make install
 
   popd
 
