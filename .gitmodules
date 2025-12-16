@@ -1,3 +1,8 @@
 [submodule "cif_api"]
 	path = cif_api
 	url = https://github.com/COMCIFS/cif_api
+  shallow = true
+[submodule "icu"]
+	path = icu
+	url = https://github.com/unicode-org/icu
+  shallow = true
