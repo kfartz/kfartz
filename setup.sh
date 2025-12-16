@@ -1,41 +1,61 @@
 #!/bin/bash
 
-DEPDIR=$PWD/.deps
-BUNVER=1.3.4
-AMVER=1.16.1
+CIFAPI_DIR=$PWD/cif_api
+ICU_DIR=$PWD/icu/icu4c/source
+DEP_DIR=$PWD/.deps
+BUN_VER=1.3.4
+AM_VER=1.16.1
 
-if [[ ! -d $DEPDIR ]]; then
-  mkdir -p $DEPDIR/bin
+export CFLAGS="-I$DEP_DIR/include $CFLAGS"
+export CXXFLAGS="-I$DEP_DIR/include $CXXFLAGS"
+export LDFLAGS="-L$DEP_DIR/lib $LDFLAGS"
+export PKG_CONFIG_PATH="$DEP_DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
+export PATH="$DEP_DIR/bin:$PATH"
+export LD_LIBRARY_PATH="$DEP_DIR/lib:$LD_LIBRARY_PATH"
 
-  pushd $DEPDIR
+if [[ ! -d $DEP_DIR ]]; then
+  git submodule update --init --recursive
 
-  curl -O0 -L https://github.com/oven-sh/bun/releases/download/bun-v$BUNVER/bun-linux-x64-baseline.zip
+  mkdir -p $DEP_DIR/bin $DEP_DIR/lib $DEP_DIR/include
+
+  pushd $DEP_DIR
+
+  curl -O0 -L https://github.com/oven-sh/bun/releases/download/bun-v$BUN_VER/bun-linux-x64-baseline.zip
   unzip bun-linux-x64-baseline.zip && rm bun-linux-x64-baseline.zip
-  ln bun-linux-x64-baseline/bun bin/bun
+  mv bun-linux-x64-baseline/bun bin/bun
 
-  curl -O0 -L https://ftp.gnu.org/gnu/automake/automake-$AMVER.tar.gz
-  tar xf automake-$AMVER.tar.gz && rm automake-$AMVER.tar.gz
+  curl -O0 -L https://ftp.gnu.org/gnu/automake/automake-$AM_VER.tar.gz
+  tar xf automake-$AM_VER.tar.gz && rm automake-$AM_VER.tar.gz
 
-  pushd automake-$AMVER
+  pushd automake-$AM_VER
 
   ./configure --prefix=$PWD/../ && make && make install
 
   popd
 
-  popd
-fi
+  curl -O0 -L https://sqlite.org/2025/sqlite-amalgamation-3510100.zip
+  unzip sqlite-amalgamation-3510100.zip && rm sqlite-amalgamation-3510100.zip
 
-export PATH="$DEPDIR/bin:$PATH"
-# Install libcif
-CIFLIB_DIR=$PWD/cif_api
-if [[ ! -d $DEPDIR/lib ]]; then
-  git submodule update --init --recursive
+  pushd sqlite-amalgamation-3510100
 
-  mkdir $DEPDIR/cif_api_build && pushd $DEPDIR/cif_api_build
-
-  $CIFLIB_DIR/configure --prefix=$DEPDIR && make && make install
+  mv sqlite3.h $DEP_DIR/include/
+  gcc -fPIC -shared -o $DEP_DIR/lib/libsqlite3.so sqlite3.c
 
   popd
-fi
 
-export LD_LIBRARY_PATH="$DEPDIR/lib:$LD_LIBRARY_PATH"
+  mkdir icu_build && pushd icu_build
+
+  $ICU_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make && make install
+
+  popd
+
+  mkdir cif_api_build && pushd cif_api_build
+
+  $CIFAPI_DIR/configure --prefix=$DEP_DIR --enable-shared --disable-static && make && make install
+
+  popd
+
+  rm -rf cif_api_build icu_build automake-$AM_VER sqlite-amalgamation-3510100 bun-linux-x64-baseline
+
+  popd
+fi
