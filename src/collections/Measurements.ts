@@ -85,7 +85,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       name: "pressure",
       type: "number",
       min: 0,
-      // @ts-ignore this should work, but of course ts says nuh-uh
+      // @ts-expect-error this should work, but of course ts says nuh-uh
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value
           ? "pressure is required for non-ambient experiments"
@@ -98,7 +98,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       name: "pressure_measurement_location",
       type: "text",
       maxLength: 100,
-      // @ts-ignore
+      // @ts-expect-error
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value
           ? "pressure_measurement_location is required for non-ambient experiments"
@@ -111,7 +111,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       name: "chamber_type",
       type: "relationship",
       relationTo: ChamberTypes.slug,
-      // @ts-ignore
+      // @ts-expect-error
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value
           ? "chamber_type is required for non-ambient experiments"
@@ -124,7 +124,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       name: "opening_angle",
       type: "select",
       options: ["30", "40", "50"],
-      // @ts-ignore
+      // @ts-expect-error
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value
           ? "opening_angle is required for non-ambient experiments"
@@ -137,7 +137,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       name: "pressure_medium",
       type: "text",
       maxLength: 100,
-      // @ts-ignore
+      // @ts-expect-error
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value
           ? "pressure_medium is required for non-ambient experiments"

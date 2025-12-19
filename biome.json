@@ -15,7 +15,10 @@
       "!dist",
       "!build",
       "!src/app/(payload)",
-      "!src/payload-types.ts"
+      "!src/payload-types.ts",
+      "!icu",
+      "!cif_api",
+      "!.deps"
     ]
   },
 
