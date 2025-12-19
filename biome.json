@@ -8,7 +8,18 @@
 
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!src/app/(payload)",
+      "!src/payload-types.ts",
+      "!icu",
+      "!cif_api",
+      "!.deps"
+    ]
   },
 
   "formatter": {
