@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { deg2rad, measurementWithUncertainty } from "@/utiils";
+import { ChamberTypes } from "./ChamberTypes";
 import { Crystals } from "./Crystals";
 
 export const Measurements: CollectionConfig & { slug: "measurements" } = {
@@ -108,8 +109,8 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
     },
     {
       name: "chamber_type",
-      type: "select",
-      options: [], // TODO: type options, statically defined or another collection?
+      type: "relationship",
+      relationTo: ChamberTypes.slug,
       // @ts-ignore
       validate: (value, { data: { experiment_type } }): true | string =>
         experiment_type === "non-ambient" && !value

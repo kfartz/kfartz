@@ -7,6 +7,7 @@ import { searchPlugin } from "@payloadcms/plugin-search";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
+import { ChamberTypes } from "./collections/ChamberTypes";
 import { Crystals } from "./collections/Crystals";
 import { Measurements } from "./collections/Measurements";
 import { Processings } from "./collections/Processings";
@@ -32,6 +33,7 @@ export default buildConfig({
     Processings,
     Refinements,
     Publications,
+    ChamberTypes,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

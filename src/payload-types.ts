@@ -73,6 +73,7 @@ export interface Config {
     processings: Processing;
     refinements: Refinement;
     publications: Publication;
+    'chamber-types': ChamberType;
     search: Search;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -87,6 +88,7 @@ export interface Config {
     processings: ProcessingsSelect<false> | ProcessingsSelect<true>;
     refinements: RefinementsSelect<false> | RefinementsSelect<true>;
     publications: PublicationsSelect<false> | PublicationsSelect<true>;
+    'chamber-types': ChamberTypesSelect<false> | ChamberTypesSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -236,10 +238,20 @@ export interface Measurement {
   resolution?: number | null;
   pressure?: number | null;
   pressure_measurement_location?: string | null;
-  chamber_type?: string | null;
+  chamber_type?: (number | null) | ChamberType;
   opening_angle?: ('30' | '40' | '50') | null;
   pressure_medium?: string | null;
   comment?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chamber-types".
+ */
+export interface ChamberType {
+  id: number;
+  name: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -251,10 +263,10 @@ export interface Processing {
   id: number;
   author: string;
   measurement: number | Measurement;
-  _diffrn_reflns_av_R_equivalents?: string | null;
-  _diffrn_reflns_av_sigmaI_netI?: string | null;
-  _diffrn_reflns_theta_min?: string | null;
-  _diffrn_reflns_theta_max?: string | null;
+  _diffrn_reflns_av_R_equivalents?: number | null;
+  _diffrn_reflns_av_sigmaI_netI?: number | null;
+  _diffrn_reflns_theta_min?: number | null;
+  _diffrn_reflns_theta_max?: number | null;
   comment?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -275,14 +287,8 @@ export interface Refinement {
   disorder: boolean;
   solvent_masking: boolean;
   aspherical_atom_model: 'IAM' | 'TAAM' | 'HAR';
-  _chemical_formula_sum?: {
-    measurement?: number | null;
-    uncertainty?: number | null;
-  };
-  '_space_group_name_H-M_alt'?: {
-    measurement?: number | null;
-    uncertainty?: number | null;
-  };
+  _chemical_formula_sum?: string | null;
+  '_space_group_name_H-M_alt'?: string | null;
   _cell_length_a?: {
     measurement?: number | null;
     uncertainty?: number | null;
@@ -311,19 +317,12 @@ export interface Refinement {
     measurement?: number | null;
     uncertainty?: number | null;
   };
-  _diffrn_reflns_Laue_measured_fraction_full?: {
-    measurement?: number | null;
-    uncertainty?: number | null;
-  };
-  _refine_ls_R_factor_gt?: {
-    measurement?: number | null;
-    uncertainty?: number | null;
-  };
-  _refine_ls_wR_factor_ref?: {
-    measurement?: number | null;
-    uncertainty?: number | null;
-  };
+  _diffrn_reflns_av_R_equivalents?: number | null;
+  _diffrn_reflns_Laue_measured_fraction_full?: number | null;
+  _refine_ls_R_factor_gt?: number | null;
+  _refine_ls_wR_factor_ref?: number | null;
   comment?: string | null;
+  final?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -418,6 +417,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'publications';
         value: number | Publication;
+      } | null)
+    | ({
+        relationTo: 'chamber-types';
+        value: number | ChamberType;
       } | null)
     | ({
         relationTo: 'search';
@@ -576,18 +579,8 @@ export interface RefinementsSelect<T extends boolean = true> {
   disorder?: T;
   solvent_masking?: T;
   aspherical_atom_model?: T;
-  _chemical_formula_sum?:
-    | T
-    | {
-        measurement?: T;
-        uncertainty?: T;
-      };
-  '_space_group_name_H-M_alt'?:
-    | T
-    | {
-        measurement?: T;
-        uncertainty?: T;
-      };
+  _chemical_formula_sum?: T;
+  '_space_group_name_H-M_alt'?: T;
   _cell_length_a?:
     | T
     | {
@@ -630,25 +623,12 @@ export interface RefinementsSelect<T extends boolean = true> {
         measurement?: T;
         uncertainty?: T;
       };
-  _diffrn_reflns_Laue_measured_fraction_full?:
-    | T
-    | {
-        measurement?: T;
-        uncertainty?: T;
-      };
-  _refine_ls_R_factor_gt?:
-    | T
-    | {
-        measurement?: T;
-        uncertainty?: T;
-      };
-  _refine_ls_wR_factor_ref?:
-    | T
-    | {
-        measurement?: T;
-        uncertainty?: T;
-      };
+  _diffrn_reflns_av_R_equivalents?: T;
+  _diffrn_reflns_Laue_measured_fraction_full?: T;
+  _refine_ls_R_factor_gt?: T;
+  _refine_ls_wR_factor_ref?: T;
   comment?: T;
+  final?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -658,6 +638,15 @@ export interface RefinementsSelect<T extends boolean = true> {
  */
 export interface PublicationsSelect<T extends boolean = true> {
   doi?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chamber-types_select".
+ */
+export interface ChamberTypesSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }

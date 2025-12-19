@@ -20,19 +20,19 @@ export const Processings: CollectionConfig = {
     },
     {
       name: "_diffrn_reflns_av_R_equivalents",
-      type: "text",
+      type: "number",
     },
     {
       name: "_diffrn_reflns_av_sigmaI_netI",
-      type: "text",
+      type: "number",
     },
     {
       name: "_diffrn_reflns_theta_min",
-      type: "text",
+      type: "number",
     },
     {
       name: "_diffrn_reflns_theta_max",
-      type: "text",
+      type: "number",
     },
     {
       name: "comment",
