@@ -4,6 +4,9 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
   slug: "crystals",
   access: {
     read: () => true,
+    create: () => true,
+    delete: ({ req: { user } }) => !!user?.admin,
+    update: ({ req: { user } }) => !!user?.admin,
   },
   fields: [
     {
