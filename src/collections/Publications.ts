@@ -4,6 +4,9 @@ export const Publications: CollectionConfig = {
   slug: "publications",
   access: {
     read: () => true,
+    create: () => true,
+    delete: ({ req: { user } }) => !!user?.admin,
+    update: ({ req: { user } }) => !!user?.admin,
   },
   fields: [
     {
