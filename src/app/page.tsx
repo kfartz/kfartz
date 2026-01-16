@@ -63,7 +63,7 @@ function TablePageContent() {
           >
             <SlidersHorizontal className="h-4 w-4" />
           </Button>
-          <Link href={`create/${currentTable.id}`} target="_blank">
+          <Link href={`insert/${currentTable.id}`} target="_blank">
             <Button size="icon" title="Add content to table">
               {" "}
               <Plus className="h-4 w-4" />
