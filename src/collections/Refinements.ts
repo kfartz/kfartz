@@ -10,9 +10,9 @@ export const Refinements: CollectionConfig = {
   },
   fields: [
     {
+      type: "relationship",
       name: "author",
-      type: "text",
-      required: true,
+      relationTo: "users",
     },
     {
       name: "next_refinements",

@@ -80,6 +80,7 @@ export function ResizableTable({
   searchQuery,
 }: ResizableTableProps) {
   const data = generateMockData(currentTable.id);
+  // const data = []
   const dataKeys =
     data.length > 0 ? Object.keys(data[0]).filter((key) => key !== "id") : [];
 

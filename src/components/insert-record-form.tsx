@@ -11,22 +11,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { RelationSelector } from "@/components/relation-selector"
 import { Save, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Schema } from "@/schema"
 
-interface Field {
-  name: string
-  type: string
-  required: boolean
-  references?: string
-}
-
-interface Schema {
-  name: string
-  description: string
-  fields: Field[]
-}
 
 interface InsertRecordFormProps {
-  schema: Schema
+  schema: any
   tableId: string
   onCancel: () => void
 }
@@ -56,12 +45,12 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
     router.push("/")
   }
 
-  const renderField = (field: Field) => {
+  const renderField = (field: any) => {
     const fieldId = `field-${field.name}`
     const value = formData[field.name] || ""
 
     switch (field.type) {
-      case "reference":
+      case "relationship":
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
@@ -70,7 +59,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
             </Label>
             <RelationSelector
               fieldName={field.name}
-              referencedTable={field.references!}
+              referencedTable={field.relationTo}
               value={value}
               onChange={(val) => handleFieldChange(field.name, val)}
               required={field.required}
@@ -158,7 +147,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         <CardHeader>
           <CardTitle>Record Details</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">{schema.fields.map((field) => renderField(field))}</CardContent>
+        <CardContent className="space-y-6">{schema.fields.map((field: any) => renderField(field))}</CardContent>
         <CardFooter className="flex justify-end gap-3 border-t pt-6">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             <X className="mr-2 h-4 w-4" />

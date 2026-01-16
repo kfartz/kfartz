@@ -4,71 +4,72 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import { InsertRecordForm } from "@/components/insert-record-form"
+import app_schema from "@/schema"
 
 // Mock tables data with schema information
-const tableSchemas = {
-  users: {
-    name: "Users",
-    description: "User accounts and profiles",
-    fields: [
-      { name: "name", type: "text", required: true },
-      { name: "email", type: "email", required: true },
-      { name: "role_id", type: "reference", required: true, references: "roles" },
-      { name: "department_id", type: "reference", required: false, references: "departments" },
-      { name: "manager_id", type: "reference", required: false, references: "users" },
-    ],
-  },
-  products: {
-    name: "Products",
-    description: "Product catalog and inventory",
-    fields: [
-      { name: "name", type: "text", required: true },
-      { name: "description", type: "textarea", required: false },
-      { name: "category_id", type: "reference", required: true, references: "categories" },
-      { name: "supplier_id", type: "reference", required: true, references: "suppliers" },
-      { name: "price", type: "number", required: true },
-      { name: "stock", type: "number", required: true },
-    ],
-  },
-  orders: {
-    name: "Orders",
-    description: "Customer orders and transactions",
-    fields: [
-      { name: "order_number", type: "text", required: true },
-      { name: "user_id", type: "reference", required: true, references: "users" },
-      { name: "product_id", type: "reference", required: true, references: "products" },
-      { name: "quantity", type: "number", required: true },
-      { name: "status_id", type: "reference", required: true, references: "statuses" },
-      { name: "notes", type: "textarea", required: false },
-    ],
-  },
-  analytics: {
-    name: "Analytics",
-    description: "Usage statistics and metrics",
-    fields: [
-      { name: "user_id", type: "reference", required: true, references: "users" },
-      { name: "event_type", type: "text", required: true },
-      { name: "metric_value", type: "number", required: true },
-      { name: "timestamp", type: "datetime", required: true },
-    ],
-  },
-  settings: {
-    name: "Settings",
-    description: "Application configuration",
-    fields: [
-      { name: "key", type: "text", required: true },
-      { name: "value", type: "text", required: true },
-      { name: "category", type: "text", required: false },
-    ],
-  },
-}
+// const tableSchemas = {
+//   users: {
+//     name: "Users",
+//     description: "User accounts and profiles",
+//     fields: [
+//       { name: "name", type: "text", required: true },
+//       { name: "email", type: "email", required: true },
+//       { name: "role_id", type: "reference", required: true, references: "roles" },
+//       { name: "department_id", type: "reference", required: false, references: "departments" },
+//       { name: "manager_id", type: "reference", required: false, references: "users" },
+//     ],
+//   },
+//   products: {
+//     name: "Products",
+//     description: "Product catalog and inventory",
+//     fields: [
+//       { name: "name", type: "text", required: true },
+//       { name: "description", type: "textarea", required: false },
+//       { name: "category_id", type: "reference", required: true, references: "categories" },
+//       { name: "supplier_id", type: "reference", required: true, references: "suppliers" },
+//       { name: "price", type: "number", required: true },
+//       { name: "stock", type: "number", required: true },
+//     ],
+//   },
+//   orders: {
+//     name: "Orders",
+//     description: "Customer orders and transactions",
+//     fields: [
+//       { name: "order_number", type: "text", required: true },
+//       { name: "user_id", type: "reference", required: true, references: "users" },
+//       { name: "product_id", type: "reference", required: true, references: "products" },
+//       { name: "quantity", type: "number", required: true },
+//       { name: "status_id", type: "reference", required: true, references: "statuses" },
+//       { name: "notes", type: "textarea", required: false },
+//     ],
+//   },
+//   analytics: {
+//     name: "Analytics",
+//     description: "Usage statistics and metrics",
+//     fields: [
+//       { name: "user_id", type: "reference", required: true, references: "users" },
+//       { name: "event_type", type: "text", required: true },
+//       { name: "metric_value", type: "number", required: true },
+//       { name: "timestamp", type: "datetime", required: true },
+//     ],
+//   },
+//   settings: {
+//     name: "Settings",
+//     description: "Application configuration",
+//     fields: [
+//       { name: "key", type: "text", required: true },
+//       { name: "value", type: "text", required: true },
+//       { name: "category", type: "text", required: false },
+//     ],
+//   },
+// }
 
 export default function InsertRecordPage() {
   const params = useParams()
   const router = useRouter()
   const tableId = params.table as string
 
-  const schema = tableSchemas[tableId as keyof typeof tableSchemas]
+  const schema = app_schema.find(e=>e.slug===tableId)!
 
   if (!schema) {
     return (
