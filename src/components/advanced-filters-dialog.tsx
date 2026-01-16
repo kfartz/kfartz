@@ -23,11 +23,13 @@ import {
 interface AdvancedFiltersDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  currentTable: { schema: any[] };
 }
 
 export function AdvancedFiltersDialog({
   open,
   onOpenChange,
+  currentTable,
 }: AdvancedFiltersDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -48,10 +50,11 @@ export function AdvancedFiltersDialog({
                   <SelectValue placeholder="Select column" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="status">Status</SelectItem>
-                  <SelectItem value="created">Created Date</SelectItem>
+									{currentTable.schema.map((field) => (
+										<SelectItem key={field.name} value={field.name}>
+											{field.name.replace(/_/g, " ")}
+										</SelectItem>
+									))}
                 </SelectContent>
               </Select>
             </div>

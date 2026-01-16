@@ -1,43 +1,22 @@
 "use client";
 
 import { Plus, Search, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AdvancedFiltersDialog } from "@/components/advanced-filters-dialog";
 import { ResizableTable } from "@/components/resizable-table";
 import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { availableTables } from "@/tables";
 
-// Mock tables data
-const availableTables = [
-  { id: "users", name: "Users", description: "User accounts and profiles" },
-  {
-    id: "products",
-    name: "Products",
-    description: "Product catalog and inventory",
-  },
-  {
-    id: "orders",
-    name: "Orders",
-    description: "Customer orders and transactions",
-  },
-  {
-    id: "analytics",
-    name: "Analytics",
-    description: "Usage statistics and metrics",
-  },
-  {
-    id: "settings",
-    name: "Settings",
-    description: "Application configuration",
-  },
-];
-
-export default function TablePage() {
+function TablePageContent() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentTable, setCurrentTable] = useState(availableTables[0]);
+
+  // Dialog states
   const [showTableSwitcher, setShowTableSwitcher] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [currentTable, setCurrentTable] = useState(availableTables[0]);
 
   // Keyboard shortcut handler (Cmd/Ctrl + K)
   useEffect(() => {
@@ -84,11 +63,12 @@ export default function TablePage() {
           >
             <SlidersHorizontal className="h-4 w-4" />
           </Button>
-
-          <Button size="icon" title="Add content to table">
-            <Plus className="h-4 w-4" />
-          </Button>
-
+          <Link href={`create/${currentTable.id}`} target="_blank">
+            <Button size="icon" title="Add content to table">
+              {" "}
+              <Plus className="h-4 w-4" />
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"
@@ -121,7 +101,12 @@ export default function TablePage() {
       <AdvancedFiltersDialog
         open={showAdvancedFilters}
         onOpenChange={setShowAdvancedFilters}
+        currentTable={currentTable} // Pass currentTable for dynamic filters
       />
     </div>
   );
+}
+
+export default function TablePage() {
+  return <TablePageContent />;
 }
