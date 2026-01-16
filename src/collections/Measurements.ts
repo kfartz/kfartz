@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { deg2rad, measurementWithUncertainty } from "@/utiils";
+import { deg2rad, measurementWithUncertainty } from "@/utils";
 import { ChamberTypes } from "./ChamberTypes";
 import { Crystals } from "./Crystals";
 

@@ -14,7 +14,7 @@ import { Processings } from "./collections/Processings";
 import { Publications } from "./collections/Publications";
 import { Refinements } from "./collections/Refinements";
 import { Users } from "./collections/Users";
-import { flattenObject } from "./utiils";
+import { flattenObject } from "./utils";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
