@@ -4,6 +4,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  output: "standalone",
+  outputFileTracingIncludes: {
+    "/**/*": ["node_modules/jose/**/*"],
+  },
 };
 
 export default withPayload(nextConfig, { devBundleServerPackages: false });
