@@ -1,0 +1,22 @@
+services:
+  kfartz:
+    image: ghcr.io/kfartz/kfartz:latest
+    ports:
+      - 3000:3000
+    networks:
+      - kfartz
+    env_file: .env-docker
+
+  postgres:
+    image: postgres:18.1-alpine
+    volumes:
+      - kfartz-data:/var/lib/postgresql/data
+    networks:
+      - kfartz
+    env_file: .env-docker
+
+volumes:
+  kfartz-data:
+
+networks:
+  kfartz: {}
