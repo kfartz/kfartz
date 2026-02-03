@@ -15,14 +15,11 @@ import { PayloadSDK } from "@payloadcms/sdk";
 function TablePageContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTable, setCurrentTable] = useState(availableTables[0]);
-  const sdk = useContext(SdkCtx);
-
+ 
   // Dialog states
   const [showTableSwitcher, setShowTableSwitcher] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-
+  
   // Keyboard shortcut handler (Cmd/Ctrl + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,19 +83,9 @@ function TablePageContent() {
               <span className="text-xs">⌘</span>K
             </kbd>
           </Button>
-          <div className="flex space-x-3">
-            <Input title="login" placeholder="login" value={login} onChange={(e)=>{setLogin(e.target.value)}}>
-            </Input>
-            <Input type="password" value={password} onChange={(e)=>{setPassword(e.target.value)}}>
-            </Input>
-            <Button variant="outline"
-              size="default"
-              onClick={()=>{
-                sdk?.login({'collection': 'users', 'data': {'email': login, 'password': password}}).catch(()=>window.alert("invalid login"))
-              }}>
-              <User2></User2>
-            </Button>
-          </div>
+          <Link href="/login" target="_blank">
+            <User2/>
+          </Link>
         </div>
       </div>
 
