@@ -1,22 +1,27 @@
 "use client";
 
-import { Plus, Search, SlidersHorizontal } from "lucide-react";
+import { Plus, Search, SlidersHorizontal, User2 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AdvancedFiltersDialog } from "@/components/advanced-filters-dialog";
 import { ResizableTable } from "@/components/resizable-table";
 import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { availableTables } from "@/tables";
+import { SdkCtx } from "@/components/sdk-context";
+import { PayloadSDK } from "@payloadcms/sdk";
 
 function TablePageContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTable, setCurrentTable] = useState(availableTables[0]);
+  const sdk = useContext(SdkCtx);
 
   // Dialog states
   const [showTableSwitcher, setShowTableSwitcher] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
 
   // Keyboard shortcut handler (Cmd/Ctrl + K)
   useEffect(() => {
@@ -81,6 +86,19 @@ function TablePageContent() {
               <span className="text-xs">⌘</span>K
             </kbd>
           </Button>
+          <div className="flex space-x-3">
+            <Input title="login" placeholder="login" value={login} onChange={(e)=>{setLogin(e.target.value)}}>
+            </Input>
+            <Input type="password" value={password} onChange={(e)=>{setPassword(e.target.value)}}>
+            </Input>
+            <Button variant="outline"
+              size="default"
+              onClick={()=>{
+                sdk?.login({'collection': 'users', 'data': {'email': login, 'password': password}}).catch(()=>window.alert("invalid login"))
+              }}>
+              <User2></User2>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -108,5 +126,8 @@ function TablePageContent() {
 }
 
 export default function TablePage() {
-  return <TablePageContent />;
+  const sdk = new PayloadSDK({
+    'baseURL': '/api'
+  })
+  return <SdkCtx value={sdk}><TablePageContent /></SdkCtx>;
 }

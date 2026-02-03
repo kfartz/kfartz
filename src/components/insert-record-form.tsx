@@ -1,29 +1,28 @@
 "use client"
 
+import { Save, X } from "lucide-react"
+import { useRouter } from "next/navigation"
 import type React from "react"
-
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { RelationSelector } from "@/components/relation-selector"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { RelationSelector } from "@/components/relation-selector"
-import { Save, X } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { Schema } from "@/schema"
-
+import type { Schema } from "@/schema"
+import { SdkCtx } from "./sdk-context"
 
 interface InsertRecordFormProps {
-  schema: any
-  tableId: string
+  schema: Schema[number]
   onCancel: () => void
 }
 
-export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordFormProps) {
+export function InsertRecordForm({ schema, onCancel }: InsertRecordFormProps) {
   const router = useRouter()
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const sdk = useContext(SdkCtx)
 
   const handleFieldChange = (fieldName: string, value: any) => {
     setFormData((prev) => ({
@@ -36,13 +35,15 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    sdk?.create({collection: schema.slug, data: formData}).then(()=>{
+      router.push("/")
+    }).catch(()=>{
+      window.alert("unsuccessfull (try logging in)")
+    }).finally(()=>{
+      setIsSubmitting(false)
+    })
 
     console.log("[v0] Submitting record:", formData)
-
-    setIsSubmitting(false)
-    router.push("/")
   }
 
   const renderField = (field: any) => {
@@ -54,15 +55,13 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
-              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l: any) => l.toUpperCase())}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <RelationSelector
-              fieldName={field.name}
               referencedTable={field.relationTo}
               value={value}
               onChange={(val) => handleFieldChange(field.name, val)}
-              required={field.required}
             />
             <p className="text-xs text-muted-foreground">References: {field.references}</p>
           </div>
@@ -72,7 +71,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
-              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l: any) => l.toUpperCase())}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Textarea
@@ -90,7 +89,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
-              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l: any) => l.toUpperCase())}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Input
@@ -108,7 +107,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
-              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l: any) => l.toUpperCase())}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Input
@@ -125,7 +124,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         return (
           <div key={field.name} className="space-y-2">
             <Label htmlFor={fieldId}>
-              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {field.name.replace(/_/g, " ").replace(/\b\w/g, (l: any) => l.toUpperCase())}
               {field.required && <span className="text-destructive ml-1">*</span>}
             </Label>
             <Input
@@ -147,7 +146,7 @@ export function InsertRecordForm({ schema, tableId, onCancel }: InsertRecordForm
         <CardHeader>
           <CardTitle>Record Details</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">{schema.fields.map((field: any) => renderField(field))}</CardContent>
+        <CardContent className="space-y-6">{schema.fields.map((field) => renderField(field))}</CardContent>
         <CardFooter className="flex justify-end gap-3 border-t pt-6">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             <X className="mr-2 h-4 w-4" />

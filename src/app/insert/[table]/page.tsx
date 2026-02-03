@@ -1,75 +1,28 @@
-"use client"
-import { useParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
-import { InsertRecordForm } from "@/components/insert-record-form"
-import app_schema from "@/schema"
-
-// Mock tables data with schema information
-// const tableSchemas = {
-//   users: {
-//     name: "Users",
-//     description: "User accounts and profiles",
-//     fields: [
-//       { name: "name", type: "text", required: true },
-//       { name: "email", type: "email", required: true },
-//       { name: "role_id", type: "reference", required: true, references: "roles" },
-//       { name: "department_id", type: "reference", required: false, references: "departments" },
-//       { name: "manager_id", type: "reference", required: false, references: "users" },
-//     ],
-//   },
-//   products: {
-//     name: "Products",
-//     description: "Product catalog and inventory",
-//     fields: [
-//       { name: "name", type: "text", required: true },
-//       { name: "description", type: "textarea", required: false },
-//       { name: "category_id", type: "reference", required: true, references: "categories" },
-//       { name: "supplier_id", type: "reference", required: true, references: "suppliers" },
-//       { name: "price", type: "number", required: true },
-//       { name: "stock", type: "number", required: true },
-//     ],
-//   },
-//   orders: {
-//     name: "Orders",
-//     description: "Customer orders and transactions",
-//     fields: [
-//       { name: "order_number", type: "text", required: true },
-//       { name: "user_id", type: "reference", required: true, references: "users" },
-//       { name: "product_id", type: "reference", required: true, references: "products" },
-//       { name: "quantity", type: "number", required: true },
-//       { name: "status_id", type: "reference", required: true, references: "statuses" },
-//       { name: "notes", type: "textarea", required: false },
-//     ],
-//   },
-//   analytics: {
-//     name: "Analytics",
-//     description: "Usage statistics and metrics",
-//     fields: [
-//       { name: "user_id", type: "reference", required: true, references: "users" },
-//       { name: "event_type", type: "text", required: true },
-//       { name: "metric_value", type: "number", required: true },
-//       { name: "timestamp", type: "datetime", required: true },
-//     ],
-//   },
-//   settings: {
-//     name: "Settings",
-//     description: "Application configuration",
-//     fields: [
-//       { name: "key", type: "text", required: true },
-//       { name: "value", type: "text", required: true },
-//       { name: "category", type: "text", required: false },
-//     ],
-//   },
-// }
+"use client";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { InsertRecordForm } from "@/components/insert-record-form";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import app_schema from "@/schema";
+import { SdkCtx } from "@/components/sdk-context";
+import { PayloadSDK } from "@payloadcms/sdk";
 
 export default function InsertRecordPage() {
-  const params = useParams()
-  const router = useRouter()
-  const tableId = params.table as string
+  const sdk = new PayloadSDK({
+      'baseURL': '/api'
+    })
+  const params = useParams();
+  const router = useRouter();
+  const tableId = params.table as string;
 
-  const schema = app_schema.find(e=>e.slug===tableId)!
+  const schema = app_schema.find((e) => e.slug === tableId)!;
 
   if (!schema) {
     return (
@@ -77,7 +30,9 @@ export default function InsertRecordPage() {
         <Card>
           <CardHeader>
             <CardTitle>Table not found</CardTitle>
-            <CardDescription>The table "{tableId}" does not exist.</CardDescription>
+            <CardDescription>
+              The table "{tableId}" does not exist.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => router.push("/")}>
@@ -87,7 +42,7 @@ export default function InsertRecordPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -95,20 +50,34 @@ export default function InsertRecordPage() {
       {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="flex items-center gap-3 px-6 py-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/")} title="Back to table">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/")}
+            title="Back to table"
+          >
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">Add new record to {schema.name}</h1>
-            <p className="text-sm text-muted-foreground">{schema.description}</p>
+            <h1 className="text-lg font-semibold">
+              Add new record to {schema.name}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {schema.description}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Main content */}
       <main className="p-6 max-w-4xl mx-auto">
-        <InsertRecordForm schema={schema} tableId={tableId} onCancel={() => router.push("/")} />
+        <SdkCtx value={sdk}>
+        <InsertRecordForm
+          schema={schema}
+          onCancel={() => router.push("/")}
+        />
+        </SdkCtx>
       </main>
     </div>
-  )
+  );
 }
