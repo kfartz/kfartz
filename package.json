@@ -26,6 +26,7 @@
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cross-env": "^10.1.0",
@@ -35,8 +36,9 @@
     "payload": "3.75.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sharp": "0.34.5",
     "lucide-react": "^0.562.0",
+    "radix-ui": "^1.4.3",
+    "sharp": "0.34.5",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

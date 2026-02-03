@@ -153,6 +153,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Looks fine
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "crystals".
  */
