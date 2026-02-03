@@ -154,6 +154,8 @@ export interface User {
   password?: string | null;
 }
 /**
+ * Looks fine
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "crystals".
  */

@@ -5,6 +5,9 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
   access: {
     read: () => true,
   },
+  admin: {
+    description: "Looks fine",
+  },
   fields: [
     {
       name: "source",

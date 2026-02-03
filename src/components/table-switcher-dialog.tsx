@@ -11,42 +11,45 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import { useCurrentTableContext } from "@/context";
 import { cn } from "@/lib/utils";
+import type { TTable } from "@/types";
 
 interface TableSwitcherDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  tables: { id: string; name: string; description: string }[];
-  currentTable: { id: string; name: string; description: string };
-  onSelectTable: (table: {
-    id: string;
-    name: string;
-    description: string;
-  }) => void;
+  tables: TTable[];
 }
 
-export function TableSwitcherDialog({
-  open,
-  onOpenChange,
-  tables,
-  currentTable,
-  onSelectTable,
-}: TableSwitcherDialogProps) {
+export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const [currentTable, setCurrentTable] = useCurrentTableContext();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const filteredTables = useMemo(() => {
     return tables.filter(
       (table) =>
         table.name.toLowerCase().includes(search.toLowerCase()) ||
-        table.description.toLowerCase().includes(search.toLowerCase()),
+        table.desc.toLowerCase().includes(search.toLowerCase()),
     );
   }, [search, tables]);
 
   useEffect(() => {
     // Find the first table that is not the current table
     const firstSelectableIndex = filteredTables.findIndex(
-      (table) => table.id !== currentTable.id,
+      (table) => table.name !== currentTable.name,
     );
 
     setSelectedIndex(firstSelectableIndex >= 0 ? firstSelectableIndex : 0);
@@ -57,7 +60,7 @@ export function TableSwitcherDialog({
     if (!open) {
       setSearch("");
       setSelectedIndex(
-        tables.findIndex((table) => table.id !== currentTable.id),
+        tables.findIndex((table) => table.name !== currentTable.name),
       );
     }
   }, [open, tables, currentTable]);
@@ -71,19 +74,20 @@ export function TableSwitcherDialog({
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev > filteredTables.length - 2) return prev;
-          if (tables[prev + 1].id === currentTable.id) return prev;
+          if (tables[prev + 1].name === currentTable.name) return prev;
           else return prev + 1;
         });
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev <= 0) return prev;
-          if (tables[prev - 1].id === currentTable.id) return prev;
+          if (tables[prev - 1].name === currentTable.name) return prev;
           else return prev - 1;
         });
       } else if (e.key === "Enter" && filteredTables[selectedIndex]) {
         e.preventDefault();
-        onSelectTable(filteredTables[selectedIndex]);
+        setCurrentTable(filteredTables[selectedIndex]);
+        setOpen(false);
       }
     };
 
@@ -93,13 +97,13 @@ export function TableSwitcherDialog({
     open,
     filteredTables,
     selectedIndex,
-    onSelectTable,
+    setCurrentTable,
     currentTable,
     tables,
   ]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-137.5 p-0 gap-0">
         <DialogHeader className="px-4 pt-4 pb-3 border-b border-border">
           <DialogTitle>Table picker</DialogTitle>
@@ -134,12 +138,15 @@ export function TableSwitcherDialog({
           ) : (
             <div className="p-2">
               {filteredTables.map((table, index) => {
-                const isCurrent = currentTable.id === table.id;
+                const isCurrent = currentTable.name === table.name;
                 return (
                   <button
                     type="button"
-                    key={table.id}
-                    onClick={() => onSelectTable(table)}
+                    key={table.name}
+                    onClick={() => {
+                      setCurrentTable(table);
+                      setOpen(false);
+                    }}
                     onMouseMove={() => !isCurrent && setSelectedIndex(index)}
                     className={cn(
                       "w-full flex items-start gap-3 px-3 py-2.5 rounded-md text-left transition-colors",
@@ -156,7 +163,7 @@ export function TableSwitcherDialog({
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm">{table.name}</div>
                       <div className="text-xs text-muted-foreground line-clamp-1">
-                        {table.description}
+                        {table.desc}
                       </div>
                     </div>
                     {isCurrent && (

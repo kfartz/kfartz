@@ -1,127 +1,76 @@
-"use client";
-
-import { Plus, Search, SlidersHorizontal } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { AdvancedFiltersDialog } from "@/components/advanced-filters-dialog";
+import config from "@payload-config";
+import { Plus } from "lucide-react";
+import { getPayload } from "payload";
 import { ResizableTable } from "@/components/resizable-table";
 import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
+import { CurrentTableContextProvider } from "@/context";
+import type { TTable } from "@/types";
+export default async function TablePage() {
+  // const [searchQuery, setSearchQuery] = useState("");
 
-// Mock tables data
-const availableTables = [
-  { id: "users", name: "Users", description: "User accounts and profiles" },
-  {
-    id: "products",
-    name: "Products",
-    description: "Product catalog and inventory",
-  },
-  {
-    id: "orders",
-    name: "Orders",
-    description: "Customer orders and transactions",
-  },
-  {
-    id: "analytics",
-    name: "Analytics",
-    description: "Usage statistics and metrics",
-  },
-  {
-    id: "settings",
-    name: "Settings",
-    description: "Application configuration",
-  },
-];
+  const payload = await getPayload({ config });
+  const collections = Object.keys(payload.collections).filter(
+    (coll) =>
+      ![
+        "search",
+        "users",
+        "payload-kv",
+        "payload-locked-documents",
+        "payload-preferences",
+        "payload-migrations",
+      ].includes(coll),
+  ) as (keyof typeof payload.collections)[];
+  const descriptions = collections.map((col) => {
+    const desc = payload.collections[col].config.admin.description?.toString();
+    if (desc) return desc;
+    else return "";
+  });
 
-export default function TablePage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showTableSwitcher, setShowTableSwitcher] = useState(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [currentTable, setCurrentTable] = useState(availableTables[0]);
-
-  // Keyboard shortcut handler (Cmd/Ctrl + K)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setShowTableSwitcher(true);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const handleTableSelect = useCallback(
-    (table: (typeof availableTables)[0]) => {
-      setCurrentTable(table);
-      setShowTableSwitcher(false);
-    },
-    [],
-  );
+  if (!collections) {
+    throw new Error("No collections found");
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with search and actions */}
-      <div className="border-b border-border bg-card">
-        <div className="flex items-center gap-3 px-6 py-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Row fuzzy finder..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-muted/50 border-muted"
-            />
-          </div>
-
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowAdvancedFilters(true)}
-            title="Advanced filters"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-          </Button>
-
+      <header className="border-b border-border bg-card">
+        <div className="flex items-center gap-3 px-6 py-4 justify-between">
+          <span>
+            <span className="text-muted-foreground ">Table: </span>
+            <span className="font-medium">{"Table"}</span>
+          </span>
           <Button size="icon" title="Add content to table">
             <Plus className="h-4 w-4" />
           </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowTableSwitcher(true)}
-            className="ml-2"
-          >
-            <span className="text-muted-foreground mr-2">Table:</span>
-            <span className="font-medium">{currentTable.name}</span>
-            <kbd className="ml-3 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-              <span className="text-xs">⌘</span>K
-            </kbd>
-          </Button>
+          <span>
+            <Kbd>
+              <span className="text-xs">Ctrl + </span>K{" "}
+            </Kbd>
+            <span> switch tables</span>
+          </span>
         </div>
-      </div>
-
+      </header>
       {/* Main content area */}
       <main className="p-6">
-        <ResizableTable currentTable={currentTable} searchQuery={searchQuery} />
+        <CurrentTableContextProvider
+          defaultValue={{
+            name: collections[0],
+            desc: descriptions[0],
+          }}
+        >
+          <ResizableTable />
+          {/* Dialogs */}
+          <TableSwitcherDialog
+            tables={collections.map(
+              (col, idx): TTable => ({
+                name: col,
+                desc: descriptions[idx],
+              }),
+            )}
+          />
+        </CurrentTableContextProvider>
       </main>
-
-      {/* Dialogs */}
-      <TableSwitcherDialog
-        open={showTableSwitcher}
-        onOpenChange={setShowTableSwitcher}
-        tables={availableTables}
-        currentTable={currentTable}
-        onSelectTable={handleTableSelect}
-      />
-
-      <AdvancedFiltersDialog
-        open={showAdvancedFilters}
-        onOpenChange={setShowAdvancedFilters}
-      />
     </div>
   );
 }
