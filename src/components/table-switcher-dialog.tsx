@@ -74,15 +74,19 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev > filteredTables.length - 2) return prev;
-          if (tables[prev + 1].name === currentTable.name) return prev;
-          else return prev + 1;
+          if (tables[prev + 1].name === currentTable.name) {
+            if (prev > filteredTables.length - 3) return prev;
+            else return prev + 2;
+          } else return prev + 1;
         });
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev <= 0) return prev;
-          if (tables[prev - 1].name === currentTable.name) return prev;
-          else return prev - 1;
+          if (tables[prev - 1].name === currentTable.name) {
+            if (prev - 2 < 0) return prev;
+            else return prev - 2;
+          } else return prev - 1;
         });
       } else if (e.key === "Enter" && filteredTables[selectedIndex]) {
         e.preventDefault();
