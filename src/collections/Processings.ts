@@ -3,6 +3,9 @@ import { Measurements } from "./Measurements";
 
 export const Processings: CollectionConfig = {
   slug: "processings",
+  admin: {
+    description: "Measurement processing information ⚙️",
+  },
   access: {
     read: () => true,
     create: () => true,
