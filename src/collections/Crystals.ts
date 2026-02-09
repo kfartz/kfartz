@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Crystals: CollectionConfig & { slug: "crystals" } = {
   slug: "crystals",
+  admin: {
+    description: "Crystal sample data 🔮",
+  },
   access: {
     read: ({ req: { user } }) => !!user,
     create: ({ req: { user } }) => !!user,

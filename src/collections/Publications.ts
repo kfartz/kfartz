@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Publications: CollectionConfig = {
   slug: "publications",
+  admin: {
+    description: "Publication data 📄",
+  },
   access: {
     read: ({ req: { user } }) => !!user,
     create: ({ req: { user } }) => !!user,

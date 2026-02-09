@@ -5,6 +5,9 @@ const slug = "refinements";
 
 export const Refinements: CollectionConfig = {
   slug,
+  admin: {
+    description: "Refinement information 🧪",
+  },
   access: {
     read: ({ req: { user } }) => !!user,
     create: ({ req: { user } }) => !!user,
