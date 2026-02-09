@@ -6,8 +6,8 @@ import { Crystals } from "./Crystals";
 export const Measurements: CollectionConfig & { slug: "measurements" } = {
   slug: "measurements",
   access: {
-    read: () => true,
-    create: () => true,
+    read: ({ req: { user } }) => !!user,
+    create: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user?.admin,
     update: ({ req: { user } }) => !!user?.admin,
   },

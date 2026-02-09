@@ -6,8 +6,8 @@ const slug = "refinements";
 export const Refinements: CollectionConfig = {
   slug,
   access: {
-    read: () => true,
-    create: () => true,
+    read: ({ req: { user } }) => !!user,
+    create: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user?.admin,
     update: ({ req: { user } }) => !!user?.admin,
   },
