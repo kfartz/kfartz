@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
@@ -11,20 +12,31 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
-import { useCurrentTableContext } from "@/context";
 import { cn } from "@/lib/utils";
-import type { TTable } from "@/types";
+import type { TTable, TTableSlug, TTables } from "@/types";
 
 interface TableSwitcherDialogProps {
-  tables: TTable[];
+  currentTable: TTable;
+  tables: TTables;
 }
 
-export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
+export function TableSwitcherDialog({
+  tables,
+  currentTable,
+}: TableSwitcherDialogProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const [currentTable, setCurrentTable] = useCurrentTableContext();
+  const router = useRouter();
+
+  // const [currentTable, setCurrentTable] = useCurrentTableContext();
+
+  const tablesArray = useMemo(() => {
+    return (Object.keys(tables) as TTableSlug[]).map(
+      (key): TTable => ({ name: key, desc: tables[key].desc }),
+    );
+  }, [tables]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,12 +51,12 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
   }, []);
 
   const filteredTables = useMemo(() => {
-    return tables.filter(
+    return tablesArray.filter(
       (table) =>
         table.name.toLowerCase().includes(search.toLowerCase()) ||
         table.desc.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search, tables]);
+  }, [search, tablesArray]);
 
   useEffect(() => {
     // Find the first table that is not the current table
@@ -60,10 +72,10 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
     if (!open) {
       setSearch("");
       setSelectedIndex(
-        tables.findIndex((table) => table.name !== currentTable.name),
+        filteredTables.findIndex((table) => table.name !== currentTable.name),
       );
     }
-  }, [open, tables, currentTable]);
+  }, [open, filteredTables, currentTable]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -74,7 +86,7 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev > filteredTables.length - 2) return prev;
-          if (tables[prev + 1].name === currentTable.name) {
+          if (filteredTables[prev + 1].name === currentTable.name) {
             if (prev > filteredTables.length - 3) return prev;
             else return prev + 2;
           } else return prev + 1;
@@ -83,28 +95,23 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
         e.preventDefault();
         setSelectedIndex((prev) => {
           if (prev <= 0) return prev;
-          if (tables[prev - 1].name === currentTable.name) {
+          if (filteredTables[prev - 1].name === currentTable.name) {
             if (prev - 2 < 0) return prev;
             else return prev - 2;
           } else return prev - 1;
         });
       } else if (e.key === "Enter" && filteredTables[selectedIndex]) {
         e.preventDefault();
-        setCurrentTable(filteredTables[selectedIndex]);
+        console.log(tablesArray[selectedIndex]);
+        router.push(`/${filteredTables[selectedIndex].name}`);
+        // setCurrentTable(filteredTables[selectedIndex]);
         setOpen(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    open,
-    filteredTables,
-    selectedIndex,
-    setCurrentTable,
-    currentTable,
-    tables,
-  ]);
+  }, [open, filteredTables, selectedIndex, currentTable, router, tablesArray]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -148,7 +155,8 @@ export function TableSwitcherDialog({ tables }: TableSwitcherDialogProps) {
                     type="button"
                     key={table.name}
                     onClick={() => {
-                      setCurrentTable(table);
+                      router.push(`/${filteredTables[selectedIndex].name}`);
+                      // setCurrentTable(table);
                       setOpen(false);
                     }}
                     onMouseMove={() => !isCurrent && setSelectedIndex(index)}
