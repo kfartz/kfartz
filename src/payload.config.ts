@@ -7,6 +7,7 @@ import { searchPlugin } from "@payloadcms/plugin-search";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
+import { flattenToString } from "@/utils/utils";
 import { ChamberTypes } from "./collections/ChamberTypes";
 import { Crystals } from "./collections/Crystals";
 import { Measurements } from "./collections/Measurements";
@@ -14,7 +15,6 @@ import { Processings } from "./collections/Processings";
 import { Publications } from "./collections/Publications";
 import { Refinements } from "./collections/Refinements";
 import { Users } from "./collections/Users";
-import { flattenObject } from "./utils";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -57,7 +57,7 @@ export default buildConfig({
       ],
       beforeSync: ({ originalDoc, searchDoc }) => ({
         ...searchDoc,
-        title: flattenObject(originalDoc),
+        title: flattenToString(originalDoc),
       }),
     }),
   ],

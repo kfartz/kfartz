@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
-import { measurementWithUncertainty } from "@/utils";
+
+import { measurementWithUncertainty } from "@/utils/utils";
 
 const slug = "refinements";
 
