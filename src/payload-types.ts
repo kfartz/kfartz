@@ -159,7 +159,7 @@ export interface User {
 export interface Crystal {
   source: string;
   id: string;
-  dimesions: {
+  dimensions: {
     max: number;
     mid: number;
     min: number;
@@ -497,7 +497,7 @@ export interface UsersSelect<T extends boolean = true> {
 export interface CrystalsSelect<T extends boolean = true> {
   source?: T;
   id?: T;
-  dimesions?:
+  dimensions?:
     | T
     | {
         max?: T;
