@@ -4,10 +4,14 @@ type FlattenableObject = {
   [key in string]: string | number | null | FlattenableObject;
 };
 
-export const flattenObject = (obj: FlattenableObject): string =>
+export const flattenToString = (obj: FlattenableObject): string =>
   Object.values(obj)
     .map((val) =>
-      !val ? "" : typeof val === "object" ? flattenObject(val) : val.toString(),
+      !val
+        ? ""
+        : typeof val === "object"
+          ? flattenToString(val)
+          : val.toString(),
     )
     .join(" ");
 
