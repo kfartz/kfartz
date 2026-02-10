@@ -23,7 +23,7 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
       required: true,
     },
     {
-      name: "dimesions",
+      name: "dimensions",
       type: "group",
       required: true,
       fields: [
