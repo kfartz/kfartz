@@ -7,7 +7,7 @@ import { searchPlugin } from "@payloadcms/plugin-search";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import sharp from "sharp";
-import { flattenToString } from "@/utils/utiils";
+import { flattenToString } from "@/utils/utils";
 import { ChamberTypes } from "./collections/ChamberTypes";
 import { Crystals } from "./collections/Crystals";
 import { Measurements } from "./collections/Measurements";
