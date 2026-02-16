@@ -215,6 +215,8 @@ export interface Crystal {
   createdAt: string;
 }
 /**
+ * Measurement information 📏
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "measurements".
  */
@@ -247,6 +249,8 @@ export interface Measurement {
   createdAt: string;
 }
 /**
+ * Pressure chamber types 💨
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "chamber-types".
  */
@@ -257,6 +261,8 @@ export interface ChamberType {
   createdAt: string;
 }
 /**
+ * Measurement processing information ⚙️
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "processings".
  */
@@ -273,6 +279,8 @@ export interface Processing {
   createdAt: string;
 }
 /**
+ * Refinement information 🧪
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "refinements".
  */
@@ -328,6 +336,8 @@ export interface Refinement {
   createdAt: string;
 }
 /**
+ * Publication data 📄
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "publications".
  */
