@@ -46,4 +46,4 @@ jobs:
         run: bun i
 
       - name: Build
-        run: bun run build
+        run: PAYLOAD_SECRET=build bun run build
