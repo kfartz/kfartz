@@ -22,7 +22,11 @@ export const Refinements: CollectionConfig = {
       required: true,
     },
     {
-      name: "next_refinements",
+      name: "name",
+      type: "text",
+    },
+    {
+      name: "previous_refinements",
       type: "array",
       fields: [
         {

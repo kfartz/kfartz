@@ -25,6 +25,10 @@ export const Processings: CollectionConfig = {
       required: true,
     },
     {
+      name: "name",
+      type: "text",
+    },
+    {
       name: "_diffrn_reflns_av_R_equivalents",
       type: "number",
     },

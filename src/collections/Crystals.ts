@@ -19,9 +19,8 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
       required: true,
     },
     {
-      name: "id",
+      name: "name",
       type: "text",
-      required: true,
     },
     {
       name: "dimensions",
