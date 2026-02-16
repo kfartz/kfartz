@@ -22,6 +22,10 @@ export const Refinements: CollectionConfig = {
       required: true,
     },
     {
+      name: "name",
+      type: "text",
+    },
+    {
       name: "next_refinements",
       type: "array",
       fields: [

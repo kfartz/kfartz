@@ -225,7 +225,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
@@ -235,20 +235,26 @@
           "primaryKey": false,
           "notNull": true
         },
-        "dimesions_max": {
-          "name": "dimesions_max",
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dimensions_max": {
+          "name": "dimensions_max",
           "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
-        "dimesions_mid": {
-          "name": "dimesions_mid",
+        "dimensions_mid": {
+          "name": "dimensions_mid",
           "type": "numeric",
           "primaryKey": false,
           "notNull": true
         },
-        "dimesions_min": {
-          "name": "dimesions_min",
+        "dimensions_min": {
+          "name": "dimensions_min",
           "type": "numeric",
           "primaryKey": false,
           "notNull": true
@@ -347,9 +353,15 @@
         },
         "crystal_id": {
           "name": "crystal_id",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "pi_name": {
           "name": "pi_name",
@@ -600,6 +612,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "_diffrn_reflns_av_r_equivalents": {
           "name": "_diffrn_reflns_av_r_equivalents",
           "type": "numeric",
@@ -839,6 +857,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "disorder": {
           "name": "disorder",
           "type": "boolean",
@@ -1062,6 +1086,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -1293,7 +1323,7 @@
         },
         "crystals_id": {
           "name": "crystals_id",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -1698,7 +1728,7 @@
         },
         "crystals_id": {
           "name": "crystals_id",
-          "type": "varchar",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -2433,6 +2463,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "3c646af3-78ca-4be0-bd6b-2fd5c2b93f30",
+  "id": "b2815008-bd87-442f-8402-a1d5904c1da2",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

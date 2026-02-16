@@ -46,90 +46,91 @@ post_data chamber-types '{"name":"capillary"}'
 
 echo "=== Crystals ==="
 
-post_data crystals '{
+C1=$(post_data_get_id crystals '{
   "source":"natural",
-  "id":"xtal-001",
+  "name":"xtal-001",
   "dimensions":{"max":3.2,"mid":1.4,"min":0.8},
   "color":{"a":"clear","b":"light","c":"colorless"},
   "shape":"block"
-}'
+  }')
 
-post_data crystals '{
+C2=$(post_data_get_id crystals '{
   "source":"synthetic",
-  "id":"xtal-002",
+  "name":"xtal-002",
   "dimensions":{"max":5.0,"mid":2.1,"min":1.9},
   "color":{"a":"metallic","b":"dark","c":"grey"},
   "shape":"plate"
-}'
+  }')
 
-post_data crystals '{
+C3=$(post_data_get_id crystals '{
   "source":"hydrothermal growth",
-  "id":"xtal-003",
+  "name":"xtal-003",
   "dimensions":{"max":0.9,"mid":0.4,"min":0.2},
   "color":{"a":"opalescent","b":"blueish","c":"blue"},
   "shape":"needle"
-}'
+  }')
 
-post_data crystals '{
+C4=$(post_data_get_id crystals '{
   "source":"flux growth",
-  "id":"xtal-004",
+  "name":"xtal-004",
   "dimensions":{"max":2.5,"mid":2.4,"min":2.3},
   "color":{"a":"dull","b":"reddish","c":"red"},
   "shape":"cube"
-}'
+  }')
 
 echo "=== Measurements ==="
 
 # single-crystal
-M1=$(post_data_get_id measurements '{
-  "crystal":"xtal-001",
-  "pi_name":"Dr. Ada Lovelace",
-  "grant_id":"NSF-CRYSTAL-001",
-  "operator_name":"Bob Beamline",
-  "facility_name":"Diamond Light Source",
-  "measurement_starting_date":"2021-06-12",
-  "experiment_type":"single crystal",
-  "_diffrn_radiation_wavelength":0.71073,
-  "_diffrn_reflns_theta_max":32.5,
-  "comment":"Baseline single-crystal dataset."
-  }')
+M1=$(post_data_get_id measurements "{
+  \"crystal\":$C1,
+  \"pi_name\":\"Dr. Ada Lovelace\",
+  \"grant_id\":\"NSF-CRYSTAL-001\",
+  \"operator_name\":\"Bob Beamline\",
+  \"facility_name\":\"Diamond Light Source\",
+  \"measurement_starting_date\":\"2021-06-12\",
+  \"experiment_type\":\"single crystal\",
+  \"_diffrn_radiation_wavelength\":0.71073,
+  \"_diffrn_reflns_theta_max\":32.5,
+  \"comment\":\"Baseline single-crystal dataset.\"
+  }")
 
 # powder
-M2=$(post_data_get_id measurements '{
-  "crystal":"xtal-002",
-  "pi_name":"Dr. Marie Curie",
-  "grant_id":"EU-H2020-POWDER",
-  "operator_name":"Alice Diffract",
-  "facility_name":"ESRF",
-  "measurement_starting_date":"2022-03-04",
-  "experiment_type":"powder",
-  "_diffrn_radiation_wavelength":1.5406,
-  "_diffrn_reflns_theta_max":28.0
-  }')
+M2=$(post_data_get_id measurements "{
+  \"crystal\":$C2,
+  \"pi_name\":\"Dr. Marie Curie\",
+  \"grant_id\":\"EU-H2020-POWDER\",
+  \"operator_name\":\"Alice Diffract\",
+  \"facility_name\":\"ESRF\",
+  \"measurement_starting_date\":\"2022-03-04\",
+  \"experiment_type\":\"powder\",
+  \"_diffrn_radiation_wavelength\":1.5406,
+  \"_diffrn_reflns_theta_max\":28.0
+  }")
 
 # non-ambient
-M3=$(post_data_get_id measurements '{
-  "crystal":"xtal-003",
-  "pi_name":"Dr. Max Planck",
-  "grant_id":"DFG-HIGH-P",
-  "operator_name":"Charlie Clamp",
-  "facility_name":"PETRA III",
-  "measurement_starting_date":"2023-11-19",
-  "experiment_type":"non-ambient",
-  "pressure":12.4,
-  "pressure_measurement_location":"ruby fluorescence near sample",
-  "chamber_type":1,
-  "opening_angle":"40",
-  "pressure_medium":"neon",
-  "_diffrn_radiation_wavelength":0.4959,
-  "_diffrn_reflns_theta_max":25.0,
-  "comment":"High-pressure DAC experiment."
-  }')
+M3=$(post_data_get_id measurements "{
+  \"crystal\":$C3,
+  \"pi_name\":\"Dr. Max Planck\",
+  \"grant_id\":\"DFG-HIGH-P\",
+  \"operator_name\":\"Charlie Clamp\",
+  \"facility_name\":\"PETRA III\",
+  \"measurement_starting_date\":\"2023-11-19\",
+  \"experiment_type\":\"non-ambient\",
+  \"pressure\":12.4,
+  \"pressure_measurement_location\":\"ruby fluorescence near sample\",
+  \"chamber_type\":1,
+  \"opening_angle\":\"40\",
+  \"pressure_medium\":\"neon\",
+  \"_diffrn_radiation_wavelength\":0.4959,
+  \"_diffrn_reflns_theta_max\":25.0,
+  \"comment\":\"High-pressure DAC experiment.\"
+  }")
 
 echo "=== Processings ==="
 
 post_data processings "{
   \"author\":\"Chad Refinerson\",
+  \"name\":\"processing 1\",
   \"measurement\":$M1,
   \"_diffrn_reflns_theta_min\":3.0,
   \"_diffrn_reflns_theta_max\":32.5,
@@ -138,6 +139,7 @@ post_data processings "{
 
 post_data processings "{
   \"author\":\"Dana Reduce\",
+  \"name\":\"processing 2\",
   \"measurement\":$M2,
   \"_diffrn_reflns_av_R_equivalents\":0.045,
   \"_diffrn_reflns_av_sigmaI_netI\":1.9
@@ -145,6 +147,7 @@ post_data processings "{
 
 post_data processings "{
   \"author\":\"Eve Pipeline\",
+  \"name\":\"processing 3\",
   \"measurement\":$M3,
   \"_diffrn_reflns_theta_min\":4.2,
   \"_diffrn_reflns_theta_max\":25.0,
@@ -161,6 +164,7 @@ echo "=== Refinements ==="
 
 post_data refinements '{
   "author":"Frank Structure",
+  "name":"refinement 1",
   "next_refinements":[],
   "disorder":false,
   "solvent_masking":false,
@@ -181,6 +185,7 @@ post_data refinements '{
 
 post_data refinements '{
   "author":"Grace Electron",
+  "name":"refinement 2",
   "next_refinements":[{"refinement":1}],
   "disorder":true,
   "solvent_masking":true,
