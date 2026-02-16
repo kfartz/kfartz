@@ -18,7 +18,7 @@
     "@commitlint/config-conventional": "^20.4.1",
     "@payloadcms/db-postgres": "3.75.0",
     "@payloadcms/next": "3.75.0",
-    "@payloadcms/plugin-search": "^3.75.0",
+    "@payloadcms/plugin-search": "3.75.0",
     "@payloadcms/richtext-lexical": "3.75.0",
     "@payloadcms/ui": "3.75.0",
     "@types/bun": "^1.3.8",

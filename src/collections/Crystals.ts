@@ -11,9 +11,7 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
     delete: ({ req: { user } }) => !!user?.admin,
     update: ({ req: { user } }) => !!user?.admin,
   },
-  admin: {
-    description: "Looks fine",
-  },
+
   fields: [
     {
       name: "source",
