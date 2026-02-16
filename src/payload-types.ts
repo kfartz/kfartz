@@ -153,7 +153,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Looks fine
+ * Crystal sample data 🔮
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "crystals".
