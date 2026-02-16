@@ -3,9 +3,12 @@ import { Measurements } from "./Measurements";
 
 export const Processings: CollectionConfig = {
   slug: "processings",
+  admin: {
+    description: "Measurement processing information ⚙️",
+  },
   access: {
-    read: () => true,
-    create: () => true,
+    read: ({ req: { user } }) => !!user,
+    create: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user?.admin,
     update: ({ req: { user } }) => !!user?.admin,
   },
