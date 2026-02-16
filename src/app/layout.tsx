@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import { Comic_Neue, Geist, Geist_Mono } from "next/font/google";
 import type React from "react";
