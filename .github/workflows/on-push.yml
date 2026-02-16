@@ -35,6 +35,12 @@ jobs:
 
   build_check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_PASSWORD: password
+        ports: ["5432:5432"]
     steps:
       - uses: oven-sh/setup-bun@v1
         with: 
@@ -46,4 +52,4 @@ jobs:
         run: bun i
 
       - name: Build
-        run: PAYLOAD_SECRET=build bun run build
+        run: PAYLOAD_SECRET=build DATABASE_URI=postgres://postgres:password@localhost:5432/build bun run build
