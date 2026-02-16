@@ -23,6 +23,10 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       required: true,
     },
     {
+      name: "name",
+      type: "text",
+    },
+    {
       name: "pi_name",
       type: "text",
       required: true,

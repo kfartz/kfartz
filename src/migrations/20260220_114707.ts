@@ -32,11 +32,12 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE "crystals" (
-  	"id" varchar PRIMARY KEY NOT NULL,
+  	"id" serial PRIMARY KEY NOT NULL,
   	"source" varchar NOT NULL,
-  	"dimesions_max" numeric NOT NULL,
-  	"dimesions_mid" numeric NOT NULL,
-  	"dimesions_min" numeric NOT NULL,
+  	"name" varchar,
+  	"dimensions_max" numeric NOT NULL,
+  	"dimensions_mid" numeric NOT NULL,
+  	"dimensions_min" numeric NOT NULL,
   	"color_a" "enum_crystals_color_a",
   	"color_b" "enum_crystals_color_b",
   	"color_c" "enum_crystals_color_c" NOT NULL,
@@ -47,7 +48,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   CREATE TABLE "measurements" (
   	"id" serial PRIMARY KEY NOT NULL,
-  	"crystal_id" varchar NOT NULL,
+  	"crystal_id" integer NOT NULL,
+  	"name" varchar,
   	"pi_name" varchar NOT NULL,
   	"grant_id" varchar NOT NULL,
   	"operator_name" varchar NOT NULL,
@@ -75,6 +77,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" serial PRIMARY KEY NOT NULL,
   	"author" varchar NOT NULL,
   	"measurement_id" integer NOT NULL,
+  	"name" varchar,
   	"_diffrn_reflns_av_r_equivalents" numeric,
   	"_diffrn_reflns_av_sigmai_neti" numeric,
   	"_diffrn_reflns_theta_min" numeric,
@@ -84,7 +87,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE "refinements_next_refinements" (
+  CREATE TABLE "refinements_previous_refinements" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
@@ -94,6 +97,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "refinements" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"author" varchar NOT NULL,
+  	"name" varchar,
   	"disorder" boolean DEFAULT false NOT NULL,
   	"solvent_masking" boolean DEFAULT false NOT NULL,
   	"aspherical_atom_model" "enum_refinements_aspherical_atom_model" NOT NULL,
@@ -126,6 +130,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "publications" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"doi" varchar NOT NULL,
+  	"name" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -150,7 +155,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"crystals_id" varchar,
+  	"crystals_id" integer,
   	"measurements_id" integer,
   	"processings_id" integer,
   	"refinements_id" integer,
@@ -176,7 +181,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
   	"users_id" integer,
-  	"crystals_id" varchar,
+  	"crystals_id" integer,
   	"measurements_id" integer,
   	"processings_id" integer,
   	"refinements_id" integer,
@@ -213,8 +218,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "measurements" ADD CONSTRAINT "measurements_crystal_id_crystals_id_fk" FOREIGN KEY ("crystal_id") REFERENCES "public"."crystals"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "measurements" ADD CONSTRAINT "measurements_chamber_type_id_chamber_types_id_fk" FOREIGN KEY ("chamber_type_id") REFERENCES "public"."chamber_types"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "processings" ADD CONSTRAINT "processings_measurement_id_measurements_id_fk" FOREIGN KEY ("measurement_id") REFERENCES "public"."measurements"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "refinements_next_refinements" ADD CONSTRAINT "refinements_next_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "refinements_next_refinements" ADD CONSTRAINT "refinements_next_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."search"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_crystals_fk" FOREIGN KEY ("crystals_id") REFERENCES "public"."crystals"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_measurements_fk" FOREIGN KEY ("measurements_id") REFERENCES "public"."measurements"("id") ON DELETE cascade ON UPDATE no action;
@@ -246,9 +251,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "processings_measurement_idx" ON "processings" USING btree ("measurement_id");
   CREATE INDEX "processings_updated_at_idx" ON "processings" USING btree ("updated_at");
   CREATE INDEX "processings_created_at_idx" ON "processings" USING btree ("created_at");
-  CREATE INDEX "refinements_next_refinements_order_idx" ON "refinements_next_refinements" USING btree ("_order");
-  CREATE INDEX "refinements_next_refinements_parent_id_idx" ON "refinements_next_refinements" USING btree ("_parent_id");
-  CREATE INDEX "refinements_next_refinements_refinement_idx" ON "refinements_next_refinements" USING btree ("refinement_id");
+  CREATE INDEX "refinements_previous_refinements_order_idx" ON "refinements_previous_refinements" USING btree ("_order");
+  CREATE INDEX "refinements_previous_refinements_parent_id_idx" ON "refinements_previous_refinements" USING btree ("_parent_id");
+  CREATE INDEX "refinements_previous_refinements_refinement_idx" ON "refinements_previous_refinements" USING btree ("refinement_id");
   CREATE INDEX "refinements_updated_at_idx" ON "refinements" USING btree ("updated_at");
   CREATE INDEX "refinements_created_at_idx" ON "refinements" USING btree ("created_at");
   CREATE INDEX "publications_updated_at_idx" ON "publications" USING btree ("updated_at");
@@ -298,7 +303,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "crystals" CASCADE;
   DROP TABLE "measurements" CASCADE;
   DROP TABLE "processings" CASCADE;
-  DROP TABLE "refinements_next_refinements" CASCADE;
+  DROP TABLE "refinements_previous_refinements" CASCADE;
   DROP TABLE "refinements" CASCADE;
   DROP TABLE "publications" CASCADE;
   DROP TABLE "chamber_types" CASCADE;
