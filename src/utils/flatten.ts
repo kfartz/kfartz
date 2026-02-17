@@ -29,7 +29,7 @@ export function flattenObject<T extends object>(
     if (value !== null && typeof value === "object" && !Array.isArray(value)) {
       flattenObject((obj as Record<string, object>)[key], ret, newKey);
     } else {
-      (obj as Record<string, object>)[key] = (obj as Record<string, object>)[
+      (ret as Record<string, object>)[newKey] = (obj as Record<string, object>)[
         key
       ];
     }
