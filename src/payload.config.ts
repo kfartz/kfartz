@@ -25,6 +25,7 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    theme: "dark",
   },
   collections: [
     Users,

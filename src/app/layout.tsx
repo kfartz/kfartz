@@ -1,13 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import { Comic_Neue, Geist, Geist_Mono } from "next/font/google";
+import { Courier_Prime } from "next/font/google";
 import type React from "react";
 import "./globals.css";
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
-const commic_neue = Comic_Neue({ subsets: ["latin"], weight: ["700"] });
+const courier_prime = Courier_Prime({ subsets: ["latin"], weight: ["700"] });
 
 export const metadata: Metadata = {
   title: "Kwartz",
@@ -24,7 +22,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={commic_neue.className}>{children}</body>
+      <body className={courier_prime.className}>{children}</body>
     </html>
   );
 }
