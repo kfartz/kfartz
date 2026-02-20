@@ -17,5 +17,9 @@ export const Publications: CollectionConfig = {
       type: "text",
       required: true,
     },
+    {
+      name: "name",
+      type: "text",
+    },
   ],
 };

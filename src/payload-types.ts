@@ -159,8 +159,9 @@ export interface User {
  * via the `definition` "crystals".
  */
 export interface Crystal {
+  id: number;
   source: string;
-  id: string;
+  name?: string | null;
   dimensions: {
     max: number;
     mid: number;
@@ -222,7 +223,8 @@ export interface Crystal {
  */
 export interface Measurement {
   id: number;
-  crystal: string | Crystal;
+  crystal: number | Crystal;
+  name?: string | null;
   pi_name: string;
   grant_id: string;
   operator_name: string;
@@ -270,6 +272,7 @@ export interface Processing {
   id: number;
   author: string;
   measurement: number | Measurement;
+  name?: string | null;
   _diffrn_reflns_av_R_equivalents?: number | null;
   _diffrn_reflns_av_sigmaI_netI?: number | null;
   _diffrn_reflns_theta_min?: number | null;
@@ -287,6 +290,7 @@ export interface Processing {
 export interface Refinement {
   id: number;
   author: string;
+  name?: string | null;
   next_refinements?:
     | {
         refinement: number | Refinement;
@@ -344,6 +348,7 @@ export interface Refinement {
 export interface Publication {
   id: number;
   doi: string;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -360,7 +365,7 @@ export interface Search {
   doc:
     | {
         relationTo: 'crystals';
-        value: string | Crystal;
+        value: number | Crystal;
       }
     | {
         relationTo: 'measurements';
@@ -411,7 +416,7 @@ export interface PayloadLockedDocument {
       } | null)
     | ({
         relationTo: 'crystals';
-        value: string | Crystal;
+        value: number | Crystal;
       } | null)
     | ({
         relationTo: 'measurements';
@@ -508,7 +513,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface CrystalsSelect<T extends boolean = true> {
   source?: T;
-  id?: T;
+  name?: T;
   dimensions?:
     | T
     | {
@@ -533,6 +538,7 @@ export interface CrystalsSelect<T extends boolean = true> {
  */
 export interface MeasurementsSelect<T extends boolean = true> {
   crystal?: T;
+  name?: T;
   pi_name?: T;
   grant_id?: T;
   operator_name?: T;
@@ -567,6 +573,7 @@ export interface MeasurementsSelect<T extends boolean = true> {
 export interface ProcessingsSelect<T extends boolean = true> {
   author?: T;
   measurement?: T;
+  name?: T;
   _diffrn_reflns_av_R_equivalents?: T;
   _diffrn_reflns_av_sigmaI_netI?: T;
   _diffrn_reflns_theta_min?: T;
@@ -581,6 +588,7 @@ export interface ProcessingsSelect<T extends boolean = true> {
  */
 export interface RefinementsSelect<T extends boolean = true> {
   author?: T;
+  name?: T;
   next_refinements?:
     | T
     | {
@@ -649,6 +657,7 @@ export interface RefinementsSelect<T extends boolean = true> {
  */
 export interface PublicationsSelect<T extends boolean = true> {
   doi?: T;
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }
