@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
+import { tableSlugs } from "@/utils/table";
 export default async function TablePage() {
   // const [searchQuery, setSearchQuery] = useState("");
-  redirect("/crystals");
+  redirect(`/${tableSlugs[0]}`);
 }

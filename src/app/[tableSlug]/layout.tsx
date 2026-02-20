@@ -1,7 +1,7 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { tableSlugs } from "@/utils/table";
+import { headers } from "next/headers";
+import NavDropdown from "@/components/nav-dropdown";
+import type { User } from "@/payload-types";
+import { payload, tableSlugs } from "@/utils/table";
 export type ParamsT = {
   tableSlug: string;
 };
@@ -19,9 +19,8 @@ export default async function TableLayout({
   params: Promise<ParamsT>;
   children: React.ReactNode;
 }) {
-  // const [searchQuery, setSearchQuery] = useState("");
   const { tableSlug } = await params;
-
+  const { user } = await payload.auth({ headers: await headers() });
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -30,15 +29,7 @@ export default async function TableLayout({
             <span className="text-muted-foreground ">Table: </span>
             <span className="font-medium">{tableSlug}</span>
           </span>
-          <Button size="icon" title="Add content to table">
-            <Plus className="h-4 w-4" />
-          </Button>
-          <span>
-            <Kbd>
-              <span className="text-xs">Ctrl + </span>K{" "}
-            </Kbd>
-            <span> switch tables</span>
-          </span>
+          <NavDropdown user={user as User} />
         </div>
       </header>
       {/* Main content area */}
