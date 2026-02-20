@@ -32,6 +32,8 @@ export function ResizableTable({ query }: TTableProps) {
       ? Object.keys(flattenObject(data[0])).filter((key) => key !== "id")
       : [];
 
+  console.log("DataKeys: " + dataKeys);
+
   const columnHelper = createColumnHelper<(typeof data)[number]>();
 
   const columns = dataKeys.map((key) =>
