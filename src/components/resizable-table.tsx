@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Refinement } from "@/payload-types";
 import type { TTableSlug } from "@/types";
 import { flattenObject } from "@/utils/flatten";
 
@@ -32,8 +33,6 @@ export function ResizableTable({ query }: TTableProps) {
       ? Object.keys(flattenObject(data[0])).filter((key) => key !== "id")
       : [];
 
-  console.log("DataKeys: " + dataKeys);
-
   const columnHelper = createColumnHelper<(typeof data)[number]>();
 
   const columns = dataKeys.map((key) =>
@@ -47,7 +46,6 @@ export function ResizableTable({ query }: TTableProps) {
     data: data,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <div className="rounded-lg border border-border bg-card overflow-hidden">
       <div className="overflow-x-auto">
@@ -59,7 +57,7 @@ export function ResizableTable({ query }: TTableProps) {
                   <TableHead key={key} className="relative font-medium">
                     <div className="flex items-center justify-between pr-2">
                       <span className="capitalize">
-                        {key.replace(/([A-Z])/g, " $1").trim()}
+                        {key.replaceAll("_", " ")}
                       </span>
                     </div>
                   </TableHead>
@@ -81,12 +79,27 @@ export function ResizableTable({ query }: TTableProps) {
               table.getCoreRowModel().rows.map((row, _) => (
                 <TableRow key={row.id} className="border-border">
                   {dataKeys.map((key, _) => {
-                    //biome-ignore lint: Fix later
-                    // @ts-ignore
                     const value = row.original[key];
                     return (
-                      <TableCell key={key} className="font-mono text-sm">
-                        {value ? value : ""}
+                      <TableCell
+                        key={key}
+                        className="font-mono text-sm max-w-[30ch]"
+                      >
+                        {(() => {
+                          if (!value) return "null";
+                          if (Array.isArray(value))
+                            return JSON.stringify(
+                              (
+                                value as {
+                                  id: number;
+                                  refinement: Refinement;
+                                }[]
+                              ).map((refref) => {
+                                return refref.refinement.name;
+                              }),
+                            );
+                          else return String(value);
+                        })()}
                       </TableCell>
                     );
                   })}
