@@ -13,7 +13,7 @@ export default function LoginPage() {
           <div className="w-full h-full flex justify-center">
             <Image
               src="/favicon.png"
-              alt="Warm architectural detail"
+              alt="Logo"
               width={100}
               height={100}
               className="object-cover"

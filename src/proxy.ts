@@ -6,9 +6,11 @@ export async function proxy(request: NextRequest) {
   const { user } = await payload.auth({
     headers: request.headers,
   });
-  console.log(user);
-  if (!user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const loginUrl = new URL("/login", request.url);
+  if (!user && request.url !== loginUrl.toString()) {
+    return NextResponse.redirect(loginUrl);
+  } else if (user && request.url === loginUrl.toString()) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -17,7 +19,7 @@ export async function proxy(request: NextRequest) {
 export const config: ProxyConfig = {
   matcher: [
     {
-      source: "/((?!login|public|_next|api).*)",
+      source: "/((?!public|_next|api|favicon.png).*)",
     },
   ],
 };
