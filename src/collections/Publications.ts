@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { Refinements } from "./Refinements";
 
 export const Publications: CollectionConfig = {
   slug: "publications",
@@ -16,6 +17,20 @@ export const Publications: CollectionConfig = {
       name: "doi",
       type: "text",
       required: true,
+    },
+    {
+      name: "refinements",
+      type: "array",
+      required: true,
+      minRows: 1,
+      fields: [
+        {
+          name: "refinement",
+          type: "relationship",
+          required: true,
+          relationTo: Refinements.slug,
+        },
+      ],
     },
     {
       name: "name",

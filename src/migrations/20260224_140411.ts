@@ -69,6 +69,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"opening_angle" "enum_measurements_opening_angle",
   	"pressure_medium" varchar,
   	"comment" varchar,
+  	"doi" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
@@ -92,6 +93,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"refinement_id" integer NOT NULL
+  );
+  
+  CREATE TABLE "refinements_processings" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"processing_id" integer NOT NULL
   );
   
   CREATE TABLE "refinements" (
@@ -125,6 +133,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"final" boolean DEFAULT false,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "publications_refinements" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"refinement_id" integer NOT NULL
   );
   
   CREATE TABLE "publications" (
@@ -220,6 +235,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "processings" ADD CONSTRAINT "processings_measurement_id_measurements_id_fk" FOREIGN KEY ("measurement_id") REFERENCES "public"."measurements"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "refinements_processings" ADD CONSTRAINT "refinements_processings_processing_id_processings_id_fk" FOREIGN KEY ("processing_id") REFERENCES "public"."processings"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "refinements_processings" ADD CONSTRAINT "refinements_processings_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "publications_refinements" ADD CONSTRAINT "publications_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "publications_refinements" ADD CONSTRAINT "publications_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."publications"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."search"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_crystals_fk" FOREIGN KEY ("crystals_id") REFERENCES "public"."crystals"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_measurements_fk" FOREIGN KEY ("measurements_id") REFERENCES "public"."measurements"("id") ON DELETE cascade ON UPDATE no action;
@@ -254,8 +273,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "refinements_previous_refinements_order_idx" ON "refinements_previous_refinements" USING btree ("_order");
   CREATE INDEX "refinements_previous_refinements_parent_id_idx" ON "refinements_previous_refinements" USING btree ("_parent_id");
   CREATE INDEX "refinements_previous_refinements_refinement_idx" ON "refinements_previous_refinements" USING btree ("refinement_id");
+  CREATE INDEX "refinements_processings_order_idx" ON "refinements_processings" USING btree ("_order");
+  CREATE INDEX "refinements_processings_parent_id_idx" ON "refinements_processings" USING btree ("_parent_id");
+  CREATE INDEX "refinements_processings_processing_idx" ON "refinements_processings" USING btree ("processing_id");
   CREATE INDEX "refinements_updated_at_idx" ON "refinements" USING btree ("updated_at");
   CREATE INDEX "refinements_created_at_idx" ON "refinements" USING btree ("created_at");
+  CREATE INDEX "publications_refinements_order_idx" ON "publications_refinements" USING btree ("_order");
+  CREATE INDEX "publications_refinements_parent_id_idx" ON "publications_refinements" USING btree ("_parent_id");
+  CREATE INDEX "publications_refinements_refinement_idx" ON "publications_refinements" USING btree ("refinement_id");
   CREATE INDEX "publications_updated_at_idx" ON "publications" USING btree ("updated_at");
   CREATE INDEX "publications_created_at_idx" ON "publications" USING btree ("created_at");
   CREATE INDEX "chamber_types_updated_at_idx" ON "chamber_types" USING btree ("updated_at");
@@ -304,7 +329,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "measurements" CASCADE;
   DROP TABLE "processings" CASCADE;
   DROP TABLE "refinements_previous_refinements" CASCADE;
+  DROP TABLE "refinements_processings" CASCADE;
   DROP TABLE "refinements" CASCADE;
+  DROP TABLE "publications_refinements" CASCADE;
   DROP TABLE "publications" CASCADE;
   DROP TABLE "chamber_types" CASCADE;
   DROP TABLE "search" CASCADE;

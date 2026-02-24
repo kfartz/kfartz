@@ -247,6 +247,7 @@ export interface Measurement {
   opening_angle?: ('30' | '40' | '50') | null;
   pressure_medium?: string | null;
   comment?: string | null;
+  doi?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -336,6 +337,10 @@ export interface Refinement {
   _refine_ls_wR_factor_ref?: number | null;
   comment?: string | null;
   final?: boolean | null;
+  processings: {
+    processing: number | Processing;
+    id?: string | null;
+  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -348,6 +353,10 @@ export interface Refinement {
 export interface Publication {
   id: number;
   doi: string;
+  refinements: {
+    refinement: number | Refinement;
+    id?: string | null;
+  }[];
   name?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -563,6 +572,7 @@ export interface MeasurementsSelect<T extends boolean = true> {
   opening_angle?: T;
   pressure_medium?: T;
   comment?: T;
+  doi?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -648,6 +658,12 @@ export interface RefinementsSelect<T extends boolean = true> {
   _refine_ls_wR_factor_ref?: T;
   comment?: T;
   final?: T;
+  processings?:
+    | T
+    | {
+        processing?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -657,6 +673,12 @@ export interface RefinementsSelect<T extends boolean = true> {
  */
 export interface PublicationsSelect<T extends boolean = true> {
   doi?: T;
+  refinements?:
+    | T
+    | {
+        refinement?: T;
+        id?: T;
+      };
   name?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -3,6 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -47,6 +48,8 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
     e.stopPropagation();
   };
 
+  const router = useRouter();
+
   useEffect(() => {
     window.addEventListener("beforeunload", handleBack);
     return () => window.removeEventListener("beforeunload", handleBack);
@@ -66,9 +69,8 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
           const err = await res.json();
           alert(`Error: ${JSON.stringify(err.errors || err)}`);
         } else {
-          window.removeEventListener("beforeunload", handleBack);
           alert("Successfully created!");
-          window.location.reload();
+          router.push(`/${tableSlug}`);
         }
       } catch (e) {
         console.error(e);
@@ -242,8 +244,8 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                 </div>
               );
             }
-          : (field) => {
-              // assuming the array is of refinement relations, since that's the only case it's used
+          : (fieldApi) => {
+              // assuming the array is of relations, since that's the only case it's used
               // maybe this will have to be changed someday
               return (
                 <div className="flex flex-col gap-2">
@@ -251,15 +253,20 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                     <Label
                       htmlFor={fieldName}
                       className={
-                        field.state.meta.errors.length ? "text-destructive" : ""
+                        fieldApi.state.meta.errors.length
+                          ? "text-destructive"
+                          : ""
                       }
                     >
-                      {field.name}
+                      {fieldApi.name}
+                      {field.required && (
+                        <span className="text-destructive"> *</span>
+                      )}
                     </Label>
                     <Button
                       type="button"
                       onClick={() =>
-                        field.pushValue({ refinement: "" } as never)
+                        fieldApi.pushValue({ refinement: "" } as never)
                       }
                       className="p-0 self-center w-5 h-5"
                       size="sm"
@@ -267,25 +274,27 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                       <Plus size="xs" />
                     </Button>
                   </div>
-                  {(field.state.value as unknown[])?.map((_, i) => {
+                  {(fieldApi.state.value as unknown[])?.map((_, i) => {
+                    const subfieldName = field.fields![0].name!;
+                    const relationTo = field.fields![0].relationTo!;
                     return (
                       <form.Field
                         // biome-ignore lint:shut up
                         key={i}
-                        name={`${field.name}[${i}].refinement`}
+                        name={`${fieldApi.name}[${i}].${subfieldName}`}
                       >
                         {(subfield) => {
                           return (
                             <div className="flex gap-2">
                               <PayloadRelationshipInput
-                                relationTo="refinements"
+                                relationTo={relationTo}
                                 value={subfield.state.value as string}
                                 onChange={subfield.handleChange}
                                 className="flex-1"
                               />
                               <Button
                                 type="button"
-                                onClick={() => field.removeValue(i)}
+                                onClick={() => fieldApi.removeValue(i)}
                               >
                                 <Minus size="lg" className="stroke-3" />
                               </Button>
@@ -295,9 +304,9 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                       </form.Field>
                     );
                   })}
-                  {field.state.meta.errors.length > 0 && (
+                  {fieldApi.state.meta.errors.length > 0 && (
                     <p className="text-sm text-destructive">
-                      {field.state.meta.errors.join(", ")}
+                      {fieldApi.state.meta.errors.join(", ")}
                     </p>
                   )}
                 </div>
