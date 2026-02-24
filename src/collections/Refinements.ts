@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
 
 import { measurementWithUncertainty } from "@/utils/utils";
+import { Processings } from "./Processings";
 
 const slug = "refinements";
 
-export const Refinements: CollectionConfig = {
+export const Refinements: CollectionConfig & { slug: typeof slug } = {
   slug,
   admin: {
     description: "Refinement information 🧪",
@@ -75,6 +76,20 @@ export const Refinements: CollectionConfig = {
       name: "final",
       type: "checkbox",
       defaultValue: false,
+    },
+    {
+      name: "processings",
+      type: "array",
+      required: true,
+      minRows: 1,
+      fields: [
+        {
+          name: "processing",
+          type: "relationship",
+          required: true,
+          relationTo: Processings.slug,
+        },
+      ],
     },
   ],
 };

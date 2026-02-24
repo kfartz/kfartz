@@ -128,77 +128,79 @@ M3=$(post_data_get_id measurements "{
 
 echo "=== Processings ==="
 
-post_data processings "{
+P1=$(post_data_get_id processings "{
   \"author\":\"Chad Refinerson\",
   \"name\":\"processing 1\",
   \"measurement\":$M1,
   \"_diffrn_reflns_theta_min\":3.0,
   \"_diffrn_reflns_theta_max\":32.5,
   \"comment\":\"Standard integration and scaling.\"
-}"
+  }")
 
-post_data processings "{
+P2=$(post_data_get_id processings "{
   \"author\":\"Dana Reduce\",
   \"name\":\"processing 2\",
   \"measurement\":$M2,
   \"_diffrn_reflns_av_R_equivalents\":0.045,
   \"_diffrn_reflns_av_sigmaI_netI\":1.9
-}"
+  }")
 
-post_data processings "{
+P3=$(post_data_get_id processings "{
   \"author\":\"Eve Pipeline\",
   \"name\":\"processing 3\",
   \"measurement\":$M3,
   \"_diffrn_reflns_theta_min\":4.2,
   \"_diffrn_reflns_theta_max\":25.0,
   \"comment\":\"Corrected for diamond absorption.\"
-}"
-
-echo "=== Publications ==="
-
-post_data publications '{"doi":"10.1000/xyz123"}'
-post_data publications '{"doi":"10.5555/highpressure.2023.42"}'
-post_data publications '{"doi":"10.4242/powder.diffraction.007"}'
+  }")
 
 echo "=== Refinements ==="
 
-post_data refinements '{
-  "author":"Frank Structure",
-  "name":"refinement 1",
-  "next_refinements":[],
-  "disorder":false,
-  "solvent_masking":false,
-  "aspherical_atom_model":"IAM",
-  "_chemical_formula_sum":"C10 H12 O4",
-  "_space_group_name_H-M_alt":"P 21/c",
-  "_cell_length_a":{"measurement":10.123,"uncertainty":0.002},
-  "_cell_length_b":{"measurement":8.456,"uncertainty":0.001},
-  "_cell_length_c":{"measurement":12.789,"uncertainty":0.003},
-  "_cell_angle_alpha":{"measurement":90,"uncertainty":0},
-  "_cell_angle_beta":{"measurement":101.23,"uncertainty":0.02},
-  "_cell_angle_gamma":{"measurement":90,"uncertainty":0},
-  "_cell_volume":{"measurement":1075.3,"uncertainty":0.5},
-  "_refine_ls_R_factor_gt":0.032,
-  "_refine_ls_wR_factor_ref":0.081,
-  "final":true
-}'
+R1=$(post_data_get_id refinements "{
+  \"author\":\"Frank Structure\",
+  \"name\":\"refinement 1\",
+  \"previous_refinements\":[],
+  \"disorder\":false,
+  \"solvent_masking\":false,
+  \"aspherical_atom_model\":\"IAM\",
+  \"_chemical_formula_sum\":\"C10 H12 O4\",
+  \"_space_group_name_H-M_alt\":\"P 21/c\",
+  \"_cell_length_a\":{\"measurement\":10.123,\"uncertainty\":0.002},
+  \"_cell_length_b\":{\"measurement\":8.456,\"uncertainty\":0.001},
+  \"_cell_length_c\":{\"measurement\":12.789,\"uncertainty\":0.003},
+  \"_cell_angle_alpha\":{\"measurement\":90,\"uncertainty\":0},
+  \"_cell_angle_beta\":{\"measurement\":101.23,\"uncertainty\":0.02},
+  \"_cell_angle_gamma\":{\"measurement\":90,\"uncertainty\":0},
+  \"_cell_volume\":{\"measurement\":1075.3,\"uncertainty\":0.5},
+  \"_refine_ls_R_factor_gt\":0.032,
+  \"_refine_ls_wR_factor_ref\":0.081,
+  \"final\":true,
+  \"processings\":[{\"processing\":$P1}]
+  }")
 
-post_data refinements '{
-  "author":"Grace Electron",
-  "name":"refinement 2",
-  "next_refinements":[{"refinement":1}],
-  "disorder":true,
-  "solvent_masking":true,
-  "aspherical_atom_model":"TAAM",
-  "_chemical_formula_sum":"Fe2 O3",
-  "_space_group_name_H-M_alt":"R -3 c",
-  "_cell_length_a":{"measurement":5.038,"uncertainty":0.001},
-  "_cell_length_c":{"measurement":13.772,"uncertainty":0.004},
-  "_cell_volume":{"measurement":302.1,"uncertainty":0.3},
-  "_refine_ls_R_factor_gt":0.041,
-  "_refine_ls_wR_factor_ref":0.097,
-  "comment":"TAAM significantly improves residual density.",
-  "final":false
-}'
+R2=$(post_data_get_id refinements "{
+  \"author\":\"Grace Electron\",
+  \"name\":\"refinement 2\",
+  \"previous_refinements\":[{\"refinement\":$R1}],
+  \"disorder\":true,
+  \"solvent_masking\":true,
+  \"aspherical_atom_model\":\"TAAM\",
+  \"_chemical_formula_sum\":\"Fe2 O3\",
+  \"_space_group_name_H-M_alt\":\"R -3 c\",
+  \"_cell_length_a\":{\"measurement\":5.038,\"uncertainty\":0.001},
+  \"_cell_length_c\":{\"measurement\":13.772,\"uncertainty\":0.004},
+  \"_cell_volume\":{\"measurement\":302.1,\"uncertainty\":0.3},
+  \"_refine_ls_R_factor_gt\":0.041,
+  \"_refine_ls_wR_factor_ref\":0.097,
+  \"comment\":\"TAAM significantly improves residual density.\",
+  \"final\":false,
+  \"processings\":[{\"processing\":$P2},{\"processing\":$P3}]
+  }")
+
+echo "=== Publications ==="
+
+post_data publications "{\"doi\":\"10.1000/xyz123\",\"refinements\":[{\"refinement\":$R1}]}"
+post_data publications "{\"doi\":\"10.5555/highpressure.2023.42\",\"refinements\":[{\"refinement\":$R2}]}"
+post_data publications "{\"doi\":\"10.4242/powder.diffraction.007\",\"refinements\":[{\"refinement\":$R1},{\"refinement\":$R2}]}"
 
 echo "=== Done ==="

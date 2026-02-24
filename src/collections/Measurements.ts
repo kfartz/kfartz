@@ -168,5 +168,9 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       type: "textarea",
       maxLength: 500,
     },
+    {
+      name: "doi",
+      type: "text",
+    },
   ],
 };

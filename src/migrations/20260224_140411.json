@@ -479,6 +479,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "doi": {
+          "name": "doi",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp(3) with time zone",
@@ -841,6 +847,116 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.refinements_processings": {
+      "name": "refinements_processings",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "processing_id": {
+          "name": "processing_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "refinements_processings_order_idx": {
+          "name": "refinements_processings_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "refinements_processings_parent_id_idx": {
+          "name": "refinements_processings_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "refinements_processings_processing_idx": {
+          "name": "refinements_processings_processing_idx",
+          "columns": [
+            {
+              "expression": "processing_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "refinements_processings_processing_id_processings_id_fk": {
+          "name": "refinements_processings_processing_id_processings_id_fk",
+          "tableFrom": "refinements_processings",
+          "tableTo": "processings",
+          "columnsFrom": [
+            "processing_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "refinements_processings_parent_id_fk": {
+          "name": "refinements_processings_parent_id_fk",
+          "tableFrom": "refinements_processings",
+          "tableTo": "refinements",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.refinements": {
       "name": "refinements",
       "schema": "",
@@ -1065,6 +1181,116 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.publications_refinements": {
+      "name": "publications_refinements",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "refinement_id": {
+          "name": "refinement_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "publications_refinements_order_idx": {
+          "name": "publications_refinements_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "publications_refinements_parent_id_idx": {
+          "name": "publications_refinements_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "publications_refinements_refinement_idx": {
+          "name": "publications_refinements_refinement_idx",
+          "columns": [
+            {
+              "expression": "refinement_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "publications_refinements_refinement_id_refinements_id_fk": {
+          "name": "publications_refinements_refinement_id_refinements_id_fk",
+          "tableFrom": "publications_refinements",
+          "tableTo": "refinements",
+          "columnsFrom": [
+            "refinement_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "publications_refinements_parent_id_fk": {
+          "name": "publications_refinements_parent_id_fk",
+          "tableFrom": "publications_refinements",
+          "tableTo": "publications",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -2463,6 +2689,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "efd0b85e-e6bf-4c83-85c8-f31564f4f8b2",
+  "id": "fda45c4e-d780-490a-9431-6c0029c999e5",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

@@ -1,8 +1,10 @@
 import type { CollectionConfig } from "payload";
 import { Measurements } from "./Measurements";
 
-export const Processings: CollectionConfig = {
-  slug: "processings",
+const slug = "processings";
+
+export const Processings: CollectionConfig & { slug: typeof slug } = {
+  slug,
   admin: {
     description: "Measurement processing information ⚙️",
   },
