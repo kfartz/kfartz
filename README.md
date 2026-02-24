@@ -1,2 +1,3 @@
 # Kfartz crystallography database
-![](public/icon.png)
+
+![](public/favicon.png)
