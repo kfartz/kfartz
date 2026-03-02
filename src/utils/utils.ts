@@ -32,14 +32,20 @@ export type CIFNumberWithUncertainty = {
 };
 export type CIFValue = string | number | CIFNumberWithUncertainty;
 
-export const cifValueForKey = (cif: string, key: string): CIFValue | null =>
-  cifValueFromString(
-    cif
-      .split("\n")
-      .filter(Boolean)
-      .map((s) => s.split(/\s+/))
-      .find((l) => l[0] === key && l.length === 2)?.[1] || null,
-  );
+export const cifValueForKey = (cif: string, key: string): CIFValue | null => {
+  const match = cif.match(new RegExp(`^${key}\\s+(.+)$`, "m"));
+  if (match?.[1]) {
+    let val = match[1].trim();
+    if (
+      (val.startsWith("'") && val.endsWith("'")) ||
+      (val.startsWith('"') && val.endsWith('"'))
+    ) {
+      val = val.substring(1, val.length - 1);
+    }
+    return cifValueFromString(val);
+  }
+  return null;
+};
 
 const cifValueFromString = (s: string | null): CIFValue | null =>
   !s

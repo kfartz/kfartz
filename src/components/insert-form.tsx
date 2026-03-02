@@ -2,9 +2,9 @@
 
 import { useForm } from "@tanstack/react-form";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { TTableSlug } from "@/types";
+import { cifValueForKey } from "@/utils/utils";
 import { PayloadRelationshipInput } from "./payload-relationship-input";
 
 export type SerializedField = {
@@ -275,8 +276,9 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                     </Button>
                   </div>
                   {(fieldApi.state.value as unknown[])?.map((_, i) => {
-                    const subfieldName = field.fields![0].name!;
-                    const relationTo = field.fields![0].relationTo!;
+                    const subfieldName = field.fields?.[0]?.name;
+                    const relationTo = field.fields?.[0]?.relationTo;
+                    if (!subfieldName || !relationTo) return null;
                     return (
                       <form.Field
                         // biome-ignore lint:shut up
@@ -316,8 +318,62 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
     );
   };
 
+  const cifInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCifUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+
+    fields.forEach((field) => {
+      const cifValue = cifValueForKey(text, field.name);
+      if (cifValue !== null) {
+        if (
+          field.type === "group" &&
+          field.fields?.some((f) => f.name === "measurement")
+        ) {
+          if (typeof cifValue === "object" && "value" in cifValue) {
+            form.setFieldValue(`${field.name}.measurement`, cifValue.value);
+            if (cifValue.uncertainty !== undefined) {
+              form.setFieldValue(
+                `${field.name}.uncertainty`,
+                cifValue.uncertainty,
+              );
+            }
+          } else {
+            form.setFieldValue(`${field.name}.measurement`, Number(cifValue));
+          }
+        } else {
+          if (typeof cifValue === "object" && "value" in cifValue) {
+            form.setFieldValue(field.name, cifValue.value);
+          } else {
+            form.setFieldValue(field.name, cifValue);
+          }
+        }
+      }
+    });
+
+    // Reset input so the same file can be uploaded again if needed
+    if (cifInputRef.current) {
+      cifInputRef.current.value = "";
+    }
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
+      <div className="mb-6 flex justify-end">
+        <input
+          type="file"
+          accept=".cif"
+          className="hidden"
+          ref={cifInputRef}
+          onChange={handleCifUpload}
+        />
+        <Button type="button" onClick={() => cifInputRef.current?.click()}>
+          <Upload className="mr-2 h-4 w-4" />
+          Load from CIF
+        </Button>
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
