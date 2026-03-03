@@ -6,6 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type { DataFromCollectionSlug, PaginatedDocs } from "payload";
+import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,79 +17,108 @@ import {
 } from "@/components/ui/table";
 import type { TTableSlug } from "@/types";
 import { flattenObject } from "@/utils/flatten";
+import { Button } from "./ui/button";
 
 type TTableProps = {
   name: TTableSlug;
   query: PaginatedDocs<DataFromCollectionSlug<TTableSlug>>;
 };
 
+const columnHelper = createColumnHelper<any>();
+
 export function ResizableTable({ query }: TTableProps) {
   const docs = query.docs;
 
-  console.log(docs);
-  const data = docs.map((doc) => flattenObject(doc));
-  const dataKeys = data.length > 0 ? Object.keys(flattenObject(data[0])) : [];
+  const data = useMemo(() => docs.map((doc) => flattenObject(doc)), [docs]);
 
-  const columnHelper = createColumnHelper<(typeof data)[number]>();
+  const [dataKeys, setDataKeys] = useState(() => {
+    if (data.length === 0) return {};
+    const keys = Object.keys(data[0]);
+    const initialKeys: Record<string, { selected: boolean }> = {};
 
-  const columns = dataKeys.map((key) =>
-    columnHelper.accessor(key, { id: key }),
-  );
+    keys.forEach((key, index) => {
+      initialKeys[key] = { selected: index < 5 };
+    });
+    initialKeys.id = { selected: true };
+    return initialKeys;
+  });
+
+  const columns = useMemo(() => {
+    return Object.keys(dataKeys)
+      .filter((key) => dataKeys[key].selected)
+      .map((key) => columnHelper.accessor(key, { id: key }));
+  }, [dataKeys]);
 
   const table = useReactTable({
     columns,
-    data: data,
+    data,
     getCoreRowModel: getCoreRowModel(),
   });
+
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-border">
-              {dataKeys.map((key) => {
-                return (
-                  <TableHead key={key} className="relative font-medium">
-                    <div className="flex items-center justify-between pr-2">
-                      <span className="capitalize">
-                        {key.replaceAll("_", " ")}
-                      </span>
-                    </div>
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={dataKeys.length}
-                  className="h-32 text-center text-muted-foreground"
+    <>
+      <header className="rounded-lg border border-border bg-card mb-2 pt-1 pb-1 pl-2 flex gap-4 items-center justify-center flex-wrap">
+        {Object.keys(dataKeys).map((key) => (
+          <Button
+            key={key}
+            className="text-[0.90rem] p-1 flex h-auto"
+            variant={dataKeys[key].selected ? "default" : "outline"}
+            onClick={() =>
+              setDataKeys((prev) => ({
+                ...prev,
+                [key]: { selected: !prev[key].selected },
+              }))
+            }
+          >
+            <span>{key}</span>
+          </Button>
+        ))}
+      </header>
+
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table className="w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="hover:bg-transparent border-border"
                 >
-                  No data found
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getCoreRowModel().rows.map((row, _) => (
-                <TableRow key={row.id} className="border-border">
-                  {dataKeys.map((key, _) => {
-                    const value = row.original[key];
-                    return (
-                      <TableCell key={key} className="font-mono text-sm">
-                        {(() => {
-                          if (!value) return "null";
-                          else return String(value);
-                        })()}
-                      </TableCell>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="relative font-medium">
+                      <span className="capitalize">
+                        {header.id.replaceAll("_", " ")}
+                      </span>
+                    </TableHead>
+                  ))}
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {data.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-32 text-center text-muted-foreground"
+                  >
+                    No data found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="border-border">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="font-mono text-sm">
+                        {String(cell.getValue() ?? "null")}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
