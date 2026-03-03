@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Refinement } from "@/payload-types";
 import type { TTableSlug } from "@/types";
 import { flattenObject } from "@/utils/flatten";
 
@@ -26,18 +25,13 @@ type TTableProps = {
 export function ResizableTable({ query }: TTableProps) {
   const docs = query.docs;
 
+  console.log(docs);
   const data = docs.map((doc) => flattenObject(doc));
-
-  const dataKeys =
-    data.length > 0
-      ? Object.keys(flattenObject(data[0])).filter((key) => key !== "id")
-      : [];
+  const dataKeys = data.length > 0 ? Object.keys(flattenObject(data[0])) : [];
 
   const columnHelper = createColumnHelper<(typeof data)[number]>();
 
   const columns = dataKeys.map((key) =>
-    // biome-ignore lint: Fix later
-    // @ts-ignore
     columnHelper.accessor(key, { id: key }),
   );
 
@@ -81,23 +75,9 @@ export function ResizableTable({ query }: TTableProps) {
                   {dataKeys.map((key, _) => {
                     const value = row.original[key];
                     return (
-                      <TableCell
-                        key={key}
-                        className="font-mono text-sm max-w-[30ch]"
-                      >
+                      <TableCell key={key} className="font-mono text-sm">
                         {(() => {
                           if (!value) return "null";
-                          if (Array.isArray(value))
-                            return JSON.stringify(
-                              (
-                                value as {
-                                  id: number;
-                                  refinement: Refinement;
-                                }[]
-                              ).map((refref) => {
-                                return refref.refinement.name;
-                              }),
-                            );
                           else return String(value);
                         })()}
                       </TableCell>
