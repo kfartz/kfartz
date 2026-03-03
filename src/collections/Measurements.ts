@@ -21,6 +21,13 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       type: "relationship",
       relationTo: Crystals.slug,
       required: true,
+      hooks: {
+        afterRead: [
+          ({ value }) => {
+            return `${value as number}`;
+          },
+        ],
+      },
     },
     {
       name: "name",

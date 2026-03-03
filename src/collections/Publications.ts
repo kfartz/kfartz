@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import type { Publication, Refinement } from "@/payload-types";
 import { Refinements } from "./Refinements";
 
 export const Publications: CollectionConfig = {
@@ -37,4 +38,22 @@ export const Publications: CollectionConfig = {
       type: "text",
     },
   ],
+
+  hooks: {
+    afterRead: [
+      // Serialize refinement relation for display
+      ({ doc }) => {
+        const prevRefs = doc.refinements as Publication["refinements"];
+        doc.refinements = (prevRefs ?? [])
+          .map(
+            (pRef) =>
+              (pRef.refinement as Refinement).name ??
+              (pRef.refinement as Refinement).id,
+          )
+          .join(", ");
+
+        return doc;
+      },
+    ],
+  },
 };
