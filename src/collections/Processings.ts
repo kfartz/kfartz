@@ -25,6 +25,13 @@ export const Processings: CollectionConfig & { slug: typeof slug } = {
       type: "relationship",
       relationTo: Measurements.slug,
       required: true,
+      hooks: {
+        afterRead: [
+          ({ value }) => {
+            return `${value as number}`;
+          },
+        ],
+      },
     },
     {
       name: "name",

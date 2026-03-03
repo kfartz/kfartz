@@ -1,4 +1,9 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, FieldHook } from "payload";
+import type { Crystal } from "@/payload-types";
+
+// Here we tell TS:
+// - This hook is for the Crystals document type
+// - The field value type is exactly Crystals['dimensions']
 
 export const Crystals: CollectionConfig & { slug: "crystals" } = {
   slug: "crystals",
@@ -46,6 +51,14 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
           min: 0,
         },
       ],
+      hooks: {
+        afterRead: [
+          ({ value }) => {
+            const data = value as Crystal["dimensions"];
+            return `(${data.min},${data.mid},${data.max})`;
+          },
+        ],
+      },
     },
     {
       name: "color",
@@ -97,6 +110,14 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
           ],
         },
       ],
+      hooks: {
+        afterRead: [
+          ({ value }) => {
+            const data = value as Crystal["color"];
+            return `${data.a ?? ""} ${data.b ?? ""} ${data.c}`.trim();
+          },
+        ],
+      },
     },
     {
       name: "shape",

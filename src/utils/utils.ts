@@ -24,6 +24,15 @@ export const measurementWithUncertainty = (name: string): GroupField => ({
     { name: "measurement", type: "number" },
     { name: "uncertainty", type: "number" },
   ],
+  hooks: {
+    afterRead: [
+      ({ value }) => {
+        const data = value as Record<"measurement" | "uncertainty", number>;
+
+        return `${data.measurement}(${data.uncertainty})`;
+      },
+    ],
+  },
 });
 
 export type CIFNumberWithUncertainty = {
