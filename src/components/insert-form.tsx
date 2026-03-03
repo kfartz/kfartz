@@ -170,7 +170,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                       value={value as string}
                       onValueChange={handleChange}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id={fieldName}>
                         <SelectValue placeholder="Select..." />
                       </SelectTrigger>
                       <SelectContent>

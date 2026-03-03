@@ -1,0 +1,17 @@
+[test]
+preload = ["./setupTests.ts"]
+# Exclude playwright E2E tests from being run by bun test
+root = "src"
+coverage = true
+coverageThreshold = 0.9
+coveragePathIgnorePatterns = [
+  "src/collections/*.ts",
+  "src/components/ui/*",
+  "e2e/**/*",
+  "src/app/**/page.tsx",
+  "src/app/**/layout.tsx",
+  "src/payload.config.ts",
+  "src/payload-types.ts",
+  "src/utils/table.ts",
+  "src/proxy.ts",
+]
