@@ -27,6 +27,20 @@ export const Refinements: CollectionConfig & { slug: typeof slug } = {
       type: "text",
     },
     {
+      name: "processings",
+      type: "array",
+      required: true,
+      minRows: 1,
+      fields: [
+        {
+          name: "processing",
+          type: "relationship",
+          required: true,
+          relationTo: Processings.slug,
+        },
+      ],
+    },
+    {
       name: "previous_refinements",
       type: "array",
       fields: [
@@ -76,20 +90,6 @@ export const Refinements: CollectionConfig & { slug: typeof slug } = {
       name: "final",
       type: "checkbox",
       defaultValue: false,
-    },
-    {
-      name: "processings",
-      type: "array",
-      required: true,
-      minRows: 1,
-      fields: [
-        {
-          name: "processing",
-          type: "relationship",
-          required: true,
-          relationTo: Processings.slug,
-        },
-      ],
     },
   ],
   hooks: {

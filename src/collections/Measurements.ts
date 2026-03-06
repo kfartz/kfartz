@@ -41,7 +41,6 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
     {
       name: "grant_id",
       type: "text",
-      required: true,
     },
     {
       name: "operator_name",
@@ -68,6 +67,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
     {
       name: "_diffrn_radiation_probe",
       type: "text",
+      required: true,
     },
     {
       name: "_diffrn_radiation_wavelength",
