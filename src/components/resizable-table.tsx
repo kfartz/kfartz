@@ -4,6 +4,7 @@ import {
   createColumnHelper,
   getCoreRowModel,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import type { DataFromCollectionSlug, PaginatedDocs } from "payload";
 import { useMemo, useState } from "react";
@@ -31,46 +32,53 @@ export function ResizableTable({ query }: TTableProps) {
 
   const data = useMemo(() => docs.map((doc) => flattenObject(doc)), [docs]);
 
-  const [dataKeys, setDataKeys] = useState(() => {
-    if (data.length === 0) return {};
-    const keys = Object.keys(data[0]);
-    const initialKeys: Record<string, { selected: boolean }> = {};
-
-    keys.forEach((key, index) => {
-      initialKeys[key] = { selected: index < 5 };
-    });
-    initialKeys.id = { selected: true };
-    return initialKeys;
-  });
-
   const columns = useMemo(() => {
-    return Object.keys(dataKeys)
-      .filter((key) => dataKeys[key].selected)
-      .map((key) => columnHelper.accessor(key, { id: key }));
-  }, [dataKeys]);
+    if (data.length === 0) return [];
+    return Object.keys(data[0]).map((key) =>
+      columnHelper.accessor(key, {
+        id: key,
+        header: key.replaceAll("_", " "),
+      }),
+    );
+  }, [data]);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => {
+      if (data.length === 0) return {};
+
+      const initialVisibility: VisibilityState = {};
+      const keys = Object.keys(data[0]);
+
+      keys.forEach((key, index) => {
+        if (index >= 5 && key !== "id") {
+          initialVisibility[key] = false;
+        }
+      });
+      return initialVisibility;
+    },
+  );
 
   const table = useReactTable({
-    columns,
     data,
+    columns,
+    state: {
+      columnVisibility,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
     <>
       <header className="rounded-lg border border-border bg-card mb-2 pt-1 pb-1 pl-2 flex gap-4 items-center justify-center flex-wrap">
-        {Object.keys(dataKeys).map((key) => (
+        {table.getAllLeafColumns().map((column) => (
           <Button
-            key={key}
+            key={column.id}
             className="text-[0.90rem] p-1 flex h-auto"
-            variant={dataKeys[key].selected ? "default" : "outline"}
-            onClick={() =>
-              setDataKeys((prev) => ({
-                ...prev,
-                [key]: { selected: !prev[key].selected },
-              }))
-            }
+            variant={column.getIsVisible() ? "default" : "outline"}
+            onClick={column.getToggleVisibilityHandler()}
           >
-            <span>{key}</span>
+            <span className="capitalize">{column.id.replaceAll("_", " ")}</span>
           </Button>
         ))}
       </header>
@@ -87,7 +95,8 @@ export function ResizableTable({ query }: TTableProps) {
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} className="relative font-medium">
                       <span className="capitalize">
-                        {header.id.replaceAll("_", " ")}
+                        {/* We set the header string in the column definition above */}
+                        {String(header.column.columnDef.header)}
                       </span>
                     </TableHead>
                   ))}
@@ -95,7 +104,7 @@ export function ResizableTable({ query }: TTableProps) {
               ))}
             </TableHeader>
             <TableBody>
-              {data.length === 0 ? (
+              {table.getRowModel().rows.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
