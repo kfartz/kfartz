@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 const validator =
-  /^(feature|bugfix|hotfix|chore|docs|test)\/[a-z0-9]+(-[a-z0-9]+)*$/;
+  /^(feat|fix|refactor|chore|docs|test|ci)\/[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const branchName = (await Bun.stdin.text()).trim();
 
