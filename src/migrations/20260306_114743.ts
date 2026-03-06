@@ -51,14 +51,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"crystal_id" integer NOT NULL,
   	"name" varchar,
   	"pi_name" varchar NOT NULL,
-  	"grant_id" varchar NOT NULL,
+  	"grant_id" varchar,
   	"operator_name" varchar NOT NULL,
   	"facility_name" varchar NOT NULL,
   	"measurement_starting_date" timestamp(3) with time zone NOT NULL,
   	"experiment_type" "enum_measurements_experiment_type" NOT NULL,
   	"_diffrn_ambient_temperature_measurement" numeric,
   	"_diffrn_ambient_temperature_uncertainty" numeric,
-  	"_diffrn_radiation_probe" varchar,
+  	"_diffrn_radiation_probe" varchar NOT NULL,
   	"_diffrn_radiation_wavelength" numeric,
   	"_diffrn_measurement_device_type" varchar,
   	"_diffrn_detector_type" varchar,
@@ -88,18 +88,18 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  CREATE TABLE "refinements_previous_refinements" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" integer NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"refinement_id" integer NOT NULL
-  );
-  
   CREATE TABLE "refinements_processings" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"processing_id" integer NOT NULL
+  );
+  
+  CREATE TABLE "refinements_previous_refinements" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"refinement_id" integer NOT NULL
   );
   
   CREATE TABLE "refinements" (
@@ -233,10 +233,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "measurements" ADD CONSTRAINT "measurements_crystal_id_crystals_id_fk" FOREIGN KEY ("crystal_id") REFERENCES "public"."crystals"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "measurements" ADD CONSTRAINT "measurements_chamber_type_id_chamber_types_id_fk" FOREIGN KEY ("chamber_type_id") REFERENCES "public"."chamber_types"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "processings" ADD CONSTRAINT "processings_measurement_id_measurements_id_fk" FOREIGN KEY ("measurement_id") REFERENCES "public"."measurements"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "refinements_processings" ADD CONSTRAINT "refinements_processings_processing_id_processings_id_fk" FOREIGN KEY ("processing_id") REFERENCES "public"."processings"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "refinements_processings" ADD CONSTRAINT "refinements_processings_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "refinements_previous_refinements" ADD CONSTRAINT "refinements_previous_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."refinements"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "publications_refinements" ADD CONSTRAINT "publications_refinements_refinement_id_refinements_id_fk" FOREIGN KEY ("refinement_id") REFERENCES "public"."refinements"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "publications_refinements" ADD CONSTRAINT "publications_refinements_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."publications"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "search_rels" ADD CONSTRAINT "search_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."search"("id") ON DELETE cascade ON UPDATE no action;
@@ -270,12 +270,12 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "processings_measurement_idx" ON "processings" USING btree ("measurement_id");
   CREATE INDEX "processings_updated_at_idx" ON "processings" USING btree ("updated_at");
   CREATE INDEX "processings_created_at_idx" ON "processings" USING btree ("created_at");
-  CREATE INDEX "refinements_previous_refinements_order_idx" ON "refinements_previous_refinements" USING btree ("_order");
-  CREATE INDEX "refinements_previous_refinements_parent_id_idx" ON "refinements_previous_refinements" USING btree ("_parent_id");
-  CREATE INDEX "refinements_previous_refinements_refinement_idx" ON "refinements_previous_refinements" USING btree ("refinement_id");
   CREATE INDEX "refinements_processings_order_idx" ON "refinements_processings" USING btree ("_order");
   CREATE INDEX "refinements_processings_parent_id_idx" ON "refinements_processings" USING btree ("_parent_id");
   CREATE INDEX "refinements_processings_processing_idx" ON "refinements_processings" USING btree ("processing_id");
+  CREATE INDEX "refinements_previous_refinements_order_idx" ON "refinements_previous_refinements" USING btree ("_order");
+  CREATE INDEX "refinements_previous_refinements_parent_id_idx" ON "refinements_previous_refinements" USING btree ("_parent_id");
+  CREATE INDEX "refinements_previous_refinements_refinement_idx" ON "refinements_previous_refinements" USING btree ("refinement_id");
   CREATE INDEX "refinements_updated_at_idx" ON "refinements" USING btree ("updated_at");
   CREATE INDEX "refinements_created_at_idx" ON "refinements" USING btree ("created_at");
   CREATE INDEX "publications_refinements_order_idx" ON "publications_refinements" USING btree ("_order");
@@ -328,8 +328,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "crystals" CASCADE;
   DROP TABLE "measurements" CASCADE;
   DROP TABLE "processings" CASCADE;
-  DROP TABLE "refinements_previous_refinements" CASCADE;
   DROP TABLE "refinements_processings" CASCADE;
+  DROP TABLE "refinements_previous_refinements" CASCADE;
   DROP TABLE "refinements" CASCADE;
   DROP TABLE "publications_refinements" CASCADE;
   DROP TABLE "publications" CASCADE;

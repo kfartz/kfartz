@@ -226,7 +226,7 @@ export interface Measurement {
   crystal: number | Crystal;
   name?: string | null;
   pi_name: string;
-  grant_id: string;
+  grant_id?: string | null;
   operator_name: string;
   facility_name: string;
   measurement_starting_date: string;
@@ -235,7 +235,7 @@ export interface Measurement {
     measurement?: number | null;
     uncertainty?: number | null;
   };
-  _diffrn_radiation_probe?: string | null;
+  _diffrn_radiation_probe: string;
   _diffrn_radiation_wavelength?: number | null;
   _diffrn_measurement_device_type?: string | null;
   _diffrn_detector_type?: string | null;
@@ -292,6 +292,10 @@ export interface Refinement {
   id: number;
   author: string;
   name?: string | null;
+  processings: {
+    processing: number | Processing;
+    id?: string | null;
+  }[];
   previous_refinements?:
     | {
         refinement: number | Refinement;
@@ -337,10 +341,6 @@ export interface Refinement {
   _refine_ls_wR_factor_ref?: number | null;
   comment?: string | null;
   final?: boolean | null;
-  processings: {
-    processing: number | Processing;
-    id?: string | null;
-  }[];
   updatedAt: string;
   createdAt: string;
 }
@@ -599,6 +599,12 @@ export interface ProcessingsSelect<T extends boolean = true> {
 export interface RefinementsSelect<T extends boolean = true> {
   author?: T;
   name?: T;
+  processings?:
+    | T
+    | {
+        processing?: T;
+        id?: T;
+      };
   previous_refinements?:
     | T
     | {
@@ -658,12 +664,6 @@ export interface RefinementsSelect<T extends boolean = true> {
   _refine_ls_wR_factor_ref?: T;
   comment?: T;
   final?: T;
-  processings?:
-    | T
-    | {
-        processing?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
