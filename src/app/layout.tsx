@@ -8,7 +8,7 @@ import "./globals.css";
 const courier_prime = Courier_Prime({ subsets: ["latin"], weight: ["700"] });
 
 export const metadata: Metadata = {
-  title: "Kwartz",
+  title: "Kfartz",
   description: "Crystallography messurement metadata manager",
   icons: {
     icon: "favicon.png",

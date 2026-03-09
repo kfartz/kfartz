@@ -53,3 +53,33 @@ jobs:
 
       - name: Build
         run: PAYLOAD_SECRET=build DATABASE_URI=postgres://postgres:password@localhost:5432/build bun run build
+
+  test_check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: kfartz_test
+        ports:
+          - "5433:5432"
+    steps:
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - uses: actions/checkout@v5
+
+      - name: Install deps
+        run: bun i
+
+      - name: Install Playwright Browsers
+        run: bunx playwright install chromium --with-deps
+
+      - name: Run Unit & Component Tests
+        run: bun run test
+
+      - name: Run E2E Tests
+        run: bun run test:e2e

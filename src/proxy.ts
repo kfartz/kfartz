@@ -1,18 +1,15 @@
 import { type NextRequest, NextResponse, type ProxyConfig } from "next/server";
-
+import { getProxyDecision } from "./utils/proxy-logic";
 import { payload } from "./utils/table";
 
 export async function proxy(request: NextRequest) {
   const { user } = await payload.auth({
     headers: request.headers,
   });
-  const loginUrl = new URL("/login", request.url);
-  if (!user && request.url !== loginUrl.toString()) {
-    return NextResponse.redirect(loginUrl);
-  } else if (user && request.url === loginUrl.toString()) {
-    return NextResponse.redirect(new URL("/", request.url));
+  const decision = getProxyDecision(user, request.url);
+  if (decision.action === "redirect") {
+    return NextResponse.redirect(decision.url);
   }
-
   return NextResponse.next();
 }
 
