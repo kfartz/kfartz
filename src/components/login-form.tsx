@@ -1,5 +1,6 @@
 "use client";
 
+import type { PayloadSDKError } from "@payloadcms/sdk";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { TTableSlug } from "@/types";
+import { sdk } from "@/utils/payload-sdk";
 
 export function LoginForm({ tableSlugs }: { tableSlugs: TTableSlug[] }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,33 +30,18 @@ export function LoginForm({ tableSlugs }: { tableSlugs: TTableSlug[] }) {
       setServerError(null);
 
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_PAYLOAD_URL || ""}/api/users/login`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              email: value.email,
-              password: value.password,
-            }),
-          },
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
+        await sdk.login({ collection: "users", data: value });
+        router.push(`/${tableSlugs[0]}`);
+      } catch (err: unknown) {
+        const e = err as PayloadSDKError;
+        if (e) {
           setServerError(
-            data?.errors?.[0]?.message ||
-              data?.message ||
+            e?.errors?.[0]?.message ||
+              e?.message ||
               "Invalid email or password.",
           );
-          return;
-        }
-
-        router.push(`/${tableSlugs[0]}`);
-      } catch {
-        setServerError("Unable to connect to the server. Please try again.");
+        } else
+          setServerError("Unable to connect to the server. Please try again.");
       }
     },
   });
