@@ -1,9 +1,5 @@
-import type { CollectionConfig, FieldHook } from "payload";
+import type { CollectionConfig } from "payload";
 import type { Crystal } from "@/payload-types";
-
-// Here we tell TS:
-// - This hook is for the Crystals document type
-// - The field value type is exactly Crystals['dimensions']
 
 export const Crystals: CollectionConfig & { slug: "crystals" } = {
   slug: "crystals",
