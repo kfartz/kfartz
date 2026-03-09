@@ -89,15 +89,19 @@ export default function NavDropdown({ user }: { user: User }) {
             <span> Switch Tables</span>
             <DropdownMenuShortcut>⌘+K</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              router.push(`${pathname}/insert`);
-            }}
-          >
-            <span> Insert</span>
-            <DropdownMenuShortcut>⌘+I</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {!pathname.endsWith("/insert") && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push(`${pathname}/insert`);
+                }}
+              >
+                <span> Insert</span>
+                <DropdownMenuShortcut>⌘+I</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
