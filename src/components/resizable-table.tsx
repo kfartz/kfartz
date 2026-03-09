@@ -6,31 +6,59 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
+import { Loader2 } from "lucide-react";
 import type { DataFromCollectionSlug, PaginatedDocs } from "payload";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import type { TTableSlug } from "@/types";
-import { flattenObject } from "@/utils/flatten";
+import { sdk } from "@/utils/payload-sdk";
+import { PageSize } from "@/utils/vars";
 import { Button } from "./ui/button";
 
 type TTableProps = {
-  name: TTableSlug;
+  slug: TTableSlug;
   query: PaginatedDocs<DataFromCollectionSlug<TTableSlug>>;
 };
-
+// biome-ignore lint: Update types later
 const columnHelper = createColumnHelper<any>();
 
-export function ResizableTable({ query }: TTableProps) {
-  const docs = query.docs;
+export function ResizableTable({ query, slug }: TTableProps) {
+  const footRef = useRef<HTMLTableSectionElement>(null);
+  const [data, setData] = useState(query.docs);
+  const [isFetching, setIsFetching] = useState(false);
 
-  const data = useMemo(() => docs.map((doc) => flattenObject(doc)), [docs]);
+  let currentPage = 1;
+  useEffect(() => {
+    const footObserver = new IntersectionObserver((entries) => {
+      setIsFetching(true);
+      if (entries[0].isIntersecting) {
+        if (currentPage) {
+          sdk
+            .find({ collection: slug, page: ++currentPage, limit: PageSize })
+            .then((res) => {
+              if (!res.docs) {
+                currentPage = 0;
+              }
+              setData((prev) => [...prev, ...res.docs]);
+              setIsFetching(false);
+            });
+        }
+      }
+    }, {});
+    if (footRef.current) footObserver.observe(footRef.current);
+
+    return () => {
+      footObserver.disconnect();
+    };
+  }, []);
 
   const columns = useMemo(() => {
     if (data.length === 0) return [];
@@ -57,7 +85,6 @@ export function ResizableTable({ query }: TTableProps) {
       return initialVisibility;
     },
   );
-
   const table = useReactTable({
     data,
     columns,
@@ -67,7 +94,6 @@ export function ResizableTable({ query }: TTableProps) {
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
   });
-
   return (
     <>
       <header className="rounded-lg border border-border bg-card mb-2 pt-1 pb-1 pl-2 flex gap-4 items-center justify-center flex-wrap">
@@ -125,6 +151,17 @@ export function ResizableTable({ query }: TTableProps) {
                 ))
               )}
             </TableBody>
+            <TableFooter ref={footRef}>
+              {isFetching && (
+                <TableRow>
+                  <TableCell colSpan={table.getVisibleFlatColumns().length}>
+                    <div className="flex justify-center items-center">
+                      <Loader2 className="animate-spin h-6 w-6 text-blue-500" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableFooter>
           </Table>
         </div>
       </div>

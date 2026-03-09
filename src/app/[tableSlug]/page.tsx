@@ -2,6 +2,7 @@ import { ResizableTable } from "@/components/resizable-table";
 import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import type { TTableSlug } from "@/types";
 import { payload, tables } from "@/utils/table";
+import { PageSize } from "@/utils/vars";
 import type { ParamsT } from "./layout";
 
 export default async function TablePage({
@@ -11,15 +12,18 @@ export default async function TablePage({
 }) {
   // const [searchQuery, setSearchQuery] = useState("");
   const tableSlug = (await params).tableSlug as TTableSlug;
-  console.log(`TableSlug: ${tableSlug}`);
 
-  const initQuery = await payload.find({ collection: tableSlug });
+  const initQuery = await payload.find({
+    collection: tableSlug,
+    page: 1,
+    limit: PageSize,
+  });
 
   return (
     <div className="min-h-screen bg-background">
       {/* Main content area */}
       <main className="p-6">
-        <ResizableTable name={tableSlug} query={initQuery} />
+        <ResizableTable slug={tableSlug} query={initQuery} />
         {/* Dialogs */}
         <TableSwitcherDialog tables={tables} currentTable={tables[tableSlug]} />
       </main>
