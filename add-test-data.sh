@@ -91,7 +91,8 @@ M1=$(post_data_get_id measurements "{
   \"experiment_type\":\"single crystal\",
   \"_diffrn_radiation_wavelength\":0.71073,
   \"_diffrn_reflns_theta_max\":32.5,
-  \"comment\":\"Baseline single-crystal dataset.\"
+  \"comment\":\"Baseline single-crystal dataset.\",
+  \"_diffrn_radiation_probe\":\"thing\"
   }")
 
 # powder
@@ -104,7 +105,8 @@ M2=$(post_data_get_id measurements "{
   \"measurement_starting_date\":\"2022-03-04\",
   \"experiment_type\":\"powder\",
   \"_diffrn_radiation_wavelength\":1.5406,
-  \"_diffrn_reflns_theta_max\":28.0
+  \"_diffrn_reflns_theta_max\":28.0,
+  \"_diffrn_radiation_probe\":\"probeeeeee\"
   }")
 
 # non-ambient
@@ -123,7 +125,8 @@ M3=$(post_data_get_id measurements "{
   \"pressure_medium\":\"neon\",
   \"_diffrn_radiation_wavelength\":0.4959,
   \"_diffrn_reflns_theta_max\":25.0,
-  \"comment\":\"High-pressure DAC experiment.\"
+  \"comment\":\"High-pressure DAC experiment.\",
+  \"_diffrn_radiation_probe\":\"kdsadlkfdsal\"
   }")
 
 echo "=== Processings ==="
