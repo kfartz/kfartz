@@ -1,4 +1,4 @@
-import type { CollectionSlug } from "payload";
+import type { CollectionSlug, DataFromCollectionSlug } from "payload";
 
 export const excludedCollections = [
   "search",
@@ -20,3 +20,8 @@ export type TTable = {
 };
 
 export type TTables = Record<TTableSlug, TTable>;
+
+export type TInitialQuery = {
+  records: DataFromCollectionSlug<TTableSlug>[];
+  isFetched: boolean;
+};
