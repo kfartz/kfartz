@@ -23,7 +23,13 @@ export default async function TablePage({
     <div className="min-h-screen bg-background">
       {/* Main content area */}
       <main className="p-6">
-        <ResizableTable slug={tableSlug} query={initQuery} />
+        <ResizableTable
+          slug={tableSlug}
+          initQuery={{
+            records: initQuery.docs,
+            isFetched: !initQuery.hasNextPage,
+          }}
+        />
         {/* Dialogs */}
         <TableSwitcherDialog tables={tables} currentTable={tables[tableSlug]} />
       </main>

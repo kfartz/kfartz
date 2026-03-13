@@ -7,8 +7,9 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import { Loader2 } from "lucide-react";
-import type { DataFromCollectionSlug, PaginatedDocs } from "payload";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -18,51 +19,50 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { TTableSlug } from "@/types";
+import type { TInitialQuery, TTableSlug } from "@/types";
+import { useData } from "@/utils/data-store";
 import { sdk } from "@/utils/payload-sdk";
 import { PageSize } from "@/utils/vars";
-import { Button } from "./ui/button";
 
 type TTableProps = {
   slug: TTableSlug;
-  query: PaginatedDocs<DataFromCollectionSlug<TTableSlug>>;
+  initQuery: TInitialQuery;
 };
+
 // biome-ignore lint: Update types later
 const columnHelper = createColumnHelper<any>();
 
-export function ResizableTable({ query, slug }: TTableProps) {
-  const footRef = useRef<HTMLTableSectionElement>(null);
-  const [data, setData] = useState(query.docs);
+export function ResizableTable({ initQuery, slug }: TTableProps) {
+  const { data, addRecords, setFetched } = useData(slug, initQuery);
+
   const [isFetching, setIsFetching] = useState(false);
 
-  let currentPage = 1;
-  useEffect(() => {
-    const footObserver = new IntersectionObserver((entries) => {
-      setIsFetching(true);
-      if (entries[0].isIntersecting) {
-        if (currentPage) {
-          sdk
-            .find({ collection: slug, page: ++currentPage, limit: PageSize })
-            .then((res) => {
-              if (!res.docs) {
-                currentPage = 0;
-              }
-              setData((prev) => [...prev, ...res.docs]);
-              setIsFetching(false);
-            });
-        }
-      }
-    }, {});
-    if (footRef.current) footObserver.observe(footRef.current);
+  let currentPage = data.records
+    ? Math.ceil(data.records.length / PageSize)
+    : 1;
 
-    return () => {
-      footObserver.disconnect();
-    };
-  }, []);
+  const { ref: loadMoreRef, inView } = useInView({ threshold: 0.1 });
+  useEffect(() => {
+    if (inView) {
+      if (!data.isFetched) {
+        setIsFetching(true);
+        sdk
+          .find({ collection: slug, page: ++currentPage, limit: PageSize })
+          .then((res) => {
+            if (!res.hasNextPage) {
+              setFetched(true);
+            }
+
+            addRecords(res.docs);
+            setIsFetching(false);
+          });
+      }
+    }
+  }, [inView]);
 
   const columns = useMemo(() => {
-    if (data.length === 0) return [];
-    return Object.keys(data[0]).map((key) =>
+    if (data.records.length === 0) return [];
+    return Object.keys(data.records[0]).map((key) =>
       columnHelper.accessor(key, {
         id: key,
         header: key.replaceAll("_", " "),
@@ -72,10 +72,10 @@ export function ResizableTable({ query, slug }: TTableProps) {
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     () => {
-      if (data.length === 0) return {};
+      if (data.records.length === 0) return {};
 
       const initialVisibility: VisibilityState = {};
-      const keys = Object.keys(data[0]);
+      const keys = Object.keys(data.records[0]);
 
       keys.forEach((key, index) => {
         if (index >= 5 && key !== "id") {
@@ -86,7 +86,7 @@ export function ResizableTable({ query, slug }: TTableProps) {
     },
   );
   const table = useReactTable({
-    data,
+    data: data.records,
     columns,
     state: {
       columnVisibility,
@@ -151,8 +151,8 @@ export function ResizableTable({ query, slug }: TTableProps) {
                 ))
               )}
             </TableBody>
-            <TableFooter ref={footRef}>
-              {isFetching && (
+            <TableFooter ref={loadMoreRef}>
+              {isFetching && !data.isFetched && (
                 <TableRow>
                   <TableCell colSpan={table.getVisibleFlatColumns().length}>
                     <div className="flex justify-center items-center">
