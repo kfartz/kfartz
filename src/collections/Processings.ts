@@ -38,6 +38,11 @@ export const Processings: CollectionConfig & { slug: typeof slug } = {
       type: "text",
     },
     {
+      name: "data_location",
+      type: "text",
+      required: true,
+    },
+    {
       name: "_diffrn_reflns_av_R_equivalents",
       type: "number",
     },

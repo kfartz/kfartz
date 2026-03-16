@@ -225,6 +225,7 @@ export interface Measurement {
   id: number;
   crystal: number | Crystal;
   name?: string | null;
+  data_location: string;
   pi_name: string;
   grant_id?: string | null;
   operator_name: string;
@@ -274,6 +275,7 @@ export interface Processing {
   author: string;
   measurement: number | Measurement;
   name?: string | null;
+  data_location: string;
   _diffrn_reflns_av_R_equivalents?: number | null;
   _diffrn_reflns_av_sigmaI_netI?: number | null;
   _diffrn_reflns_theta_min?: number | null;
@@ -302,6 +304,7 @@ export interface Refinement {
         id?: string | null;
       }[]
     | null;
+  data_location: string;
   disorder: boolean;
   solvent_masking: boolean;
   aspherical_atom_model: 'IAM' | 'TAAM' | 'HAR';
@@ -548,6 +551,7 @@ export interface CrystalsSelect<T extends boolean = true> {
 export interface MeasurementsSelect<T extends boolean = true> {
   crystal?: T;
   name?: T;
+  data_location?: T;
   pi_name?: T;
   grant_id?: T;
   operator_name?: T;
@@ -584,6 +588,7 @@ export interface ProcessingsSelect<T extends boolean = true> {
   author?: T;
   measurement?: T;
   name?: T;
+  data_location?: T;
   _diffrn_reflns_av_R_equivalents?: T;
   _diffrn_reflns_av_sigmaI_netI?: T;
   _diffrn_reflns_theta_min?: T;
@@ -611,6 +616,7 @@ export interface RefinementsSelect<T extends boolean = true> {
         refinement?: T;
         id?: T;
       };
+  data_location?: T;
   disorder?: T;
   solvent_masking?: T;
   aspherical_atom_model?: T;
