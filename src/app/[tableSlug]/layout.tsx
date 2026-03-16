@@ -1,8 +1,6 @@
-import { headers } from "next/headers";
 import Image from "next/image";
 import NavDropdown from "@/components/nav-dropdown";
-import type { User } from "@/payload-types";
-import { payload, tableSlugs } from "@/utils/table";
+import { tableSlugs } from "@/utils/table";
 export type ParamsT = {
   tableSlug: string;
 };
@@ -21,7 +19,6 @@ export default async function TableLayout({
   children: React.ReactNode;
 }) {
   const { tableSlug } = await params;
-  const { user } = await payload.auth({ headers: await headers() });
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -40,7 +37,7 @@ export default async function TableLayout({
             <span className="text-muted-foreground ">Table: </span>
             <span className="font-medium">{tableSlug}</span>
           </span>
-          <NavDropdown user={user as User} />
+          <NavDropdown />
         </div>
       </header>
       {/* Main content area */}

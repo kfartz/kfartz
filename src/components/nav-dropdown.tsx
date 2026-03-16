@@ -3,6 +3,7 @@ import { Loader2, User as UserIcon } from "lucide-react";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +14,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { User } from "@/payload-types";
+import { sdk } from "@/utils/payload-sdk";
 
 async function logout(router: AppRouterInstance) {
   const res = await fetch(
@@ -28,12 +29,19 @@ async function logout(router: AppRouterInstance) {
   router.replace("/login");
 }
 
-export default function NavDropdown({ user }: { user: User }) {
+export default function NavDropdown() {
   const router = useRouter();
   const pathname = usePathname();
+  const profileFetch = useSWR(`prfile`, () =>
+    sdk.me({ collection: "users" }).then((me) => me.user),
+  );
+  if (profileFetch.error) {
+    throw Error(profileFetch.error);
+  }
 
   const [isLoggingOut, setisLoggingOut] = useState(false);
-  const [error, setError] = useState("");
+  const [logoutError, setLogoutError] = useState("");
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "i") {
@@ -44,7 +52,7 @@ export default function NavDropdown({ user }: { user: User }) {
         // Logout
         e.preventDefault();
         setisLoggingOut(true);
-        logout(router).catch((e: Error) => setError(e.message));
+        logout(router).catch((e: Error) => setLogoutError(e.message));
       }
     };
 
@@ -52,7 +60,7 @@ export default function NavDropdown({ user }: { user: User }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [router, pathname]);
 
-  if (error) throw Error(error);
+  if (logoutError) throw Error(logoutError);
 
   return (
     <DropdownMenu>
@@ -67,7 +75,11 @@ export default function NavDropdown({ user }: { user: User }) {
               <span className="font-bold">
                 <UserIcon />
               </span>
-              {user.email.split("@")[0]}
+              {profileFetch.isLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                profileFetch.data?.email.split("@")[0]
+              )}
             </>
           )}
         </Button>
@@ -108,7 +120,7 @@ export default function NavDropdown({ user }: { user: User }) {
               // Logout
               setisLoggingOut(true);
 
-              logout(router).catch((e: Error) => setError(e.message));
+              logout(router).catch((e: Error) => setLogoutError(e.message));
             }}
           >
             <span> Log out</span>
