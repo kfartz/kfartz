@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import type { Processing, Refinement } from "@/payload-types";
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 import { measurementWithUncertainty } from "@/utils/utils";
 import { Processings } from "./Processings";
 
@@ -125,5 +126,6 @@ export const Refinements: CollectionConfig & { slug: typeof slug } = {
         return doc;
       },
     ],
+    afterChange: [regeneratePage],
   },
 };

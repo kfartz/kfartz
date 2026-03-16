@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 import { deg2rad, measurementWithUncertainty } from "@/utils/utils";
 import { ChamberTypes } from "./ChamberTypes";
 import { Crystals } from "./Crystals";
@@ -185,4 +185,7 @@ export const Measurements: CollectionConfig & { slug: "measurements" } = {
       type: "text",
     },
   ],
+  hooks: {
+    afterChange: [regeneratePage],
+  },
 };
