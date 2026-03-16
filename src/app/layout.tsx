@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import type { Metadata } from "next";
 import { Courier_Prime } from "next/font/google";
 import type React from "react";

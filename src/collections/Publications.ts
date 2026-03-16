@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import type { Publication, Refinement } from "@/payload-types";
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 import { Refinements } from "./Refinements";
 
 export const Publications: CollectionConfig = {
@@ -55,5 +56,6 @@ export const Publications: CollectionConfig = {
         return doc;
       },
     ],
+    afterChange: [regeneratePage],
   },
 };

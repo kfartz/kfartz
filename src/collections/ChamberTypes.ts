@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 
 export const ChamberTypes: CollectionConfig & { slug: "chamber-types" } = {
   slug: "chamber-types",
@@ -18,4 +19,7 @@ export const ChamberTypes: CollectionConfig & { slug: "chamber-types" } = {
       required: true,
     },
   ],
+  hooks: {
+    afterChange: [regeneratePage],
+  },
 };

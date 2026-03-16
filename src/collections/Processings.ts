@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 import { Measurements } from "./Measurements";
 
 const slug = "processings";
@@ -64,4 +65,7 @@ export const Processings: CollectionConfig & { slug: typeof slug } = {
       maxLength: 500,
     },
   ],
+  hooks: {
+    afterChange: [regeneratePage],
+  },
 };

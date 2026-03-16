@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import type { Crystal } from "@/payload-types";
+import { regeneratePage } from "@/utils/regenerate-pages-hook";
 
 export const Crystals: CollectionConfig & { slug: "crystals" } = {
   slug: "crystals",
@@ -135,4 +136,8 @@ export const Crystals: CollectionConfig & { slug: "crystals" } = {
       ],
     },
   ],
+
+  hooks: {
+    afterChange: [regeneratePage],
+  },
 };
