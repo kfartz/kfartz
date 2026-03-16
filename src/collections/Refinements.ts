@@ -53,6 +53,11 @@ export const Refinements: CollectionConfig & { slug: typeof slug } = {
       ],
     },
     {
+      name: "data_location",
+      type: "text",
+      required: true,
+    },
+    {
       name: "disorder",
       type: "checkbox",
       required: true,

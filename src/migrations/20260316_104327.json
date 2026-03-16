@@ -363,6 +363,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "data_location": {
+          "name": "data_location",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
         "pi_name": {
           "name": "pi_name",
           "type": "varchar",
@@ -623,6 +629,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "data_location": {
+          "name": "data_location",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         },
         "_diffrn_reflns_av_r_equivalents": {
           "name": "_diffrn_reflns_av_r_equivalents",
@@ -978,6 +990,12 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
+        },
+        "data_location": {
+          "name": "data_location",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         },
         "disorder": {
           "name": "disorder",
@@ -2689,6 +2707,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "f2fae7d2-c251-401f-87ef-6a51cc10fdaa",
+  "id": "2e5647c6-da01-4caf-8624-623ce6560fec",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
