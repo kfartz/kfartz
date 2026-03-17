@@ -100,26 +100,25 @@ export const Refinements: CollectionConfig & { slug: typeof slug } = {
   ],
   hooks: {
     afterRead: [
-      // Serialize refinement relation for display
       ({ doc }) => {
         const prevRefs =
           doc.previous_refinements as Refinement["previous_refinements"];
+
         doc.previous_refinements = (prevRefs ?? [])
           .map(
             (pRef) =>
-              (pRef.refinement as Refinement).name ??
-              (pRef.refinement as Refinement).id,
+              (pRef.refinement as Refinement)?.name ??
+              (pRef.refinement as Refinement)?.id,
           )
           .join(", ");
 
-        // Serialize processing relation for display
         const processings = doc.processings as Refinement["processings"];
 
-        doc.processings = processings
+        doc.processings = (processings ?? [])
           .map(
             (procRel) =>
-              (procRel.processing as Processing).name ??
-              (procRel.processing as Processing).id,
+              (procRel.processing as Processing)?.name ??
+              (procRel.processing as Processing)?.id,
           )
           .join(", ");
 
