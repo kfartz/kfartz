@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import NavDropdown from "@/components/nav-dropdown";
 import { tableSlugs } from "@/utils/table";
 export type ParamsT = {
@@ -23,7 +24,7 @@ export default async function TableLayout({
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="flex items-center gap-3 px-6 py-4 justify-between">
-          <a href={`/${tableSlug}`}>
+          <Link href={`/${tableSlug}`}>
             <Image
               src="/favicon.png"
               alt="Logo"
@@ -32,7 +33,7 @@ export default async function TableLayout({
               className="object-cover"
               priority
             />
-          </a>
+          </Link>
           <span>
             <span className="text-muted-foreground ">Table: </span>
             <span className="font-medium">{tableSlug}</span>
