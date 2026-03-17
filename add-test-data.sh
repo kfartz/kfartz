@@ -92,7 +92,8 @@ M1=$(post_data_get_id measurements "{
   \"_diffrn_radiation_wavelength\":0.71073,
   \"_diffrn_reflns_theta_max\":32.5,
   \"comment\":\"Baseline single-crystal dataset.\",
-  \"_diffrn_radiation_probe\":\"thing\"
+  \"_diffrn_radiation_probe\":\"thing\",
+  \"data_location\":\"somerandom\"
   }")
 
 # powder
@@ -106,7 +107,8 @@ M2=$(post_data_get_id measurements "{
   \"experiment_type\":\"powder\",
   \"_diffrn_radiation_wavelength\":1.5406,
   \"_diffrn_reflns_theta_max\":28.0,
-  \"_diffrn_radiation_probe\":\"probeeeeee\"
+  \"_diffrn_radiation_probe\":\"probeeeeee\",
+  \"data_location\":\"somerandom\"
   }")
 
 # non-ambient
@@ -126,7 +128,8 @@ M3=$(post_data_get_id measurements "{
   \"_diffrn_radiation_wavelength\":0.4959,
   \"_diffrn_reflns_theta_max\":25.0,
   \"comment\":\"High-pressure DAC experiment.\",
-  \"_diffrn_radiation_probe\":\"kdsadlkfdsal\"
+  \"_diffrn_radiation_probe\":\"kdsadlkfdsal\",
+  \"data_location\":\"somerandom\"
   }")
 
 echo "=== Processings ==="
@@ -137,7 +140,8 @@ P1=$(post_data_get_id processings "{
   \"measurement\":$M1,
   \"_diffrn_reflns_theta_min\":3.0,
   \"_diffrn_reflns_theta_max\":32.5,
-  \"comment\":\"Standard integration and scaling.\"
+  \"comment\":\"Standard integration and scaling.\",
+  \"data_location\":\"somerandom\"
   }")
 
 P2=$(post_data_get_id processings "{
@@ -145,7 +149,8 @@ P2=$(post_data_get_id processings "{
   \"name\":\"processing 2\",
   \"measurement\":$M2,
   \"_diffrn_reflns_av_R_equivalents\":0.045,
-  \"_diffrn_reflns_av_sigmaI_netI\":1.9
+  \"_diffrn_reflns_av_sigmaI_netI\":1.9,
+  \"data_location\":\"somerandom\"
   }")
 
 P3=$(post_data_get_id processings "{
@@ -154,7 +159,8 @@ P3=$(post_data_get_id processings "{
   \"measurement\":$M3,
   \"_diffrn_reflns_theta_min\":4.2,
   \"_diffrn_reflns_theta_max\":25.0,
-  \"comment\":\"Corrected for diamond absorption.\"
+  \"comment\":\"Corrected for diamond absorption.\",
+  \"data_location\":\"somerandom\"
   }")
 
 echo "=== Refinements ==="
@@ -178,7 +184,8 @@ R1=$(post_data_get_id refinements "{
   \"_refine_ls_R_factor_gt\":0.032,
   \"_refine_ls_wR_factor_ref\":0.081,
   \"final\":true,
-  \"processings\":[{\"processing\":$P1}]
+  \"processings\":[{\"processing\":$P1}],
+  \"data_location\":\"somerandom\"
   }")
 
 R2=$(post_data_get_id refinements "{
@@ -197,7 +204,8 @@ R2=$(post_data_get_id refinements "{
   \"_refine_ls_wR_factor_ref\":0.097,
   \"comment\":\"TAAM significantly improves residual density.\",
   \"final\":false,
-  \"processings\":[{\"processing\":$P2},{\"processing\":$P3}]
+  \"processings\":[{\"processing\":$P2},{\"processing\":$P3}],
+  \"data_location\":\"somerandom\"
   }")
 
 echo "=== Publications ==="
