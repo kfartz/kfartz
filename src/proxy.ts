@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
 export const config: ProxyConfig = {
   matcher: [
     {
-      source: "/((?!public|_next|api|favicon.png|admin).*)",
+      source: "/((?!public/|_next/|api/|favicon.png|admin/).*)",
     },
   ],
 };
