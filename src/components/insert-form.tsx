@@ -1,10 +1,18 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Minus, Plus, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -18,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { TTableSlug } from "@/types";
+import { sdk } from "@/utils/payload-sdk";
 import { cifValueForKey } from "@/utils/utils";
 import { PayloadRelationshipInput } from "./payload-relationship-input";
 
@@ -37,49 +46,33 @@ interface InsertFormProps {
   fields: SerializedField[];
 }
 
-// Define the shape of the form state for safer access
 type FormValues = Record<string, unknown>;
 
-const queryClient = new QueryClient();
-
 export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
-  const handleBack = (e: Event) => {
-    if (confirm("Discard changes?")) return;
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   const router = useRouter();
 
-  useEffect(() => {
-    window.addEventListener("beforeunload", handleBack);
-    return () => window.removeEventListener("beforeunload", handleBack);
-  });
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const form = useForm({
     defaultValues: {},
     onSubmit: async ({ value }) => {
-      console.log("Submitting:", value);
       try {
-        const res = await fetch(`/api/${tableSlug}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(value),
+        await sdk.create({
+          collection: tableSlug,
+          data: value as Record<string, unknown>,
         });
-        if (!res.ok) {
-          const err = await res.json();
-          alert(`Error: ${JSON.stringify(err.errors || err)}`);
-        } else {
-          alert("Successfully created!");
-          router.push(`/${tableSlug}`);
-        }
-      } catch (e) {
-        console.error(e);
+        router.push(`/${tableSlug}`);
+        // window.location.href = `/${tableSlug}`;
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : JSON.stringify(error);
+        setErrorMessage(message);
+        setShowErrorDialog(true);
       }
     },
   });
 
-  // Helper to determine if a field is conditionally required
   const isConditionallyRequired = (fieldName: string, values: FormValues) => {
     if (tableSlug !== "measurements") return false;
 
@@ -121,7 +114,6 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
         name={fieldName}
         validators={{
           onChange: ({ value }) => {
-            // value is unknown here, so strictly check against null/undefined/empty string
             const isEmpty =
               value === undefined || value === null || value === "";
 
@@ -129,10 +121,9 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
               return "This field is required";
             }
 
-            // Access root form state
             const allValues = form.state.values;
             if (isConditionallyRequired(field.name, allValues) && isEmpty) {
-              return `Required for non-ambient experiments`;
+              return "Required for non-ambient experiments";
             }
 
             return undefined;
@@ -162,7 +153,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                   {field.type === "relationship" && field.relationTo ? (
                     <PayloadRelationshipInput
                       relationTo={field.relationTo}
-                      value={value as string}
+                      value={value as number | null}
                       onChange={(val) => handleChange(val)}
                     />
                   ) : field.type === "select" && field.options ? (
@@ -246,8 +237,6 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
               );
             }
           : (fieldApi) => {
-              // assuming the array is of relations, since that's the only case it's used
-              // maybe this will have to be changed someday
               return (
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
@@ -267,7 +256,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                     <Button
                       type="button"
                       onClick={() =>
-                        fieldApi.pushValue({ refinement: "" } as never)
+                        fieldApi.pushValue({ refinement: null } as never)
                       }
                       className="p-0 self-center w-5 h-5"
                       size="sm"
@@ -281,8 +270,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                     if (!subfieldName || !relationTo) return null;
                     return (
                       <form.Field
-                        // biome-ignore lint:shut up
-                        key={i}
+                        key={`${fieldApi.name}-${i}`}
                         name={`${fieldApi.name}[${i}].${subfieldName}`}
                       >
                         {(subfield) => {
@@ -290,7 +278,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
                             <div className="flex gap-2">
                               <PayloadRelationshipInput
                                 relationTo={relationTo}
-                                value={subfield.state.value as string}
+                                value={subfield.state.value as number | null}
                                 onChange={subfield.handleChange}
                                 className="flex-1"
                               />
@@ -353,14 +341,13 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
       }
     });
 
-    // Reset input so the same file can be uploaded again if needed
     if (cifInputRef.current) {
       cifInputRef.current.value = "";
     }
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <div className="mb-6 flex justify-end">
         <input
           type="file"
@@ -374,6 +361,7 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
           Load from CIF
         </Button>
       </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -390,6 +378,39 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
           </Button>
         </div>
       </form>
-    </QueryClientProvider>
+
+      {/* <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}> */}
+      {/*   <DialogContent> */}
+      {/*     <DialogHeader> */}
+      {/*       <DialogTitle>Success</DialogTitle> */}
+      {/*       <DialogDescription>Record created successfully.</DialogDescription> */}
+      {/*     </DialogHeader> */}
+      {/*     <DialogFooter> */}
+      {/*       <Button */}
+      {/*         onClick={() => { */}
+      {/*           router.push(`/${tableSlug}`); */}
+      {/*           router.refresh(); */}
+      {/*         }} */}
+      {/*       > */}
+      {/*         Return to {tableSlug} */}
+      {/*       </Button> */}
+      {/*     </DialogFooter> */}
+      {/*   </DialogContent> */}
+      {/* </Dialog> */}
+
+      <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Error</AlertDialogTitle>
+            <AlertDialogDescription>{errorMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowErrorDialog(false)}>
+              Close
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

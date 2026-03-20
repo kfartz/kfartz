@@ -1,8 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
-import * as React from "react";
+import type { CollectionSlug } from "payload";
+import { useState } from "react";
+import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,35 +19,21 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { sdk } from "@/utils/payload-sdk";
 
 interface Props {
   relationTo: string;
-  value: string | null;
-  onChange: (value: string) => void;
+  value: number | null;
+  onChange: (value: number) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
 }
 
-// Define the shape of the document we fetch for suggestions
 interface RelationshipDoc {
-  id: string;
+  id: number;
   name?: string | null;
   createdAt: string;
-}
-
-// Define the Payload paginated response shape
-interface PayloadResponse<T> {
-  docs: T[];
-  totalDocs: number;
-  limit: number;
-  totalPages: number;
-  page: number;
-  pagingCounter: number;
-  hasPrevPage: boolean;
-  hasNextPage: boolean;
-  prevPage: number | null;
-  nextPage: number | null;
 }
 
 export function PayloadRelationshipInput({
@@ -57,24 +44,21 @@ export function PayloadRelationshipInput({
   disabled,
   className,
 }: Props) {
-  const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useQuery<PayloadResponse<RelationshipDoc>>({
-    queryKey: ["payload-relation", relationTo, search],
-    queryFn: async () => {
-      const searchParam = search ? `&where[name][contains]=${search}` : "";
+  const { data, isLoading } = useSWR(
+    open ? ["payload-relation", relationTo, search] : null,
+    async () =>
+      sdk.find({
+        collection: relationTo as CollectionSlug,
+        limit: 10,
+        select: { name: true, createdAt: true },
+        where: search ? { name: { contains: search } } : undefined,
+      }),
+  );
 
-      const res = await fetch(
-        `/api/${relationTo}?limit=10&select[name]=true&select[createdAt]=true${searchParam}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json() as Promise<PayloadResponse<RelationshipDoc>>;
-    },
-    enabled: open,
-  });
-
-  const docs = data?.docs || [];
+  const docs = (data?.docs as RelationshipDoc[]) || [];
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
@@ -86,7 +70,7 @@ export function PayloadRelationshipInput({
   };
 
   const selectedLabel = value
-    ? docs.find((d) => d.id === value)?.name || value
+    ? docs.find((d) => d.id === value)?.name || String(value)
     : placeholder || "Select item...";
 
   return (
@@ -96,14 +80,14 @@ export function PayloadRelationshipInput({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`${className} w-full justify-between font-normal`}
+          className={cn("w-full justify-between font-normal", className)}
           disabled={disabled}
         >
           {selectedLabel}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-100 p-0" align="start">
+      <PopoverContent className="w-[25rem] p-0" align="start">
         <Command shouldFilter={false}>
           <CommandInput placeholder="Search..." onValueChange={setSearch} />
           <CommandList>
@@ -119,7 +103,7 @@ export function PayloadRelationshipInput({
               {docs.map((doc) => (
                 <CommandItem
                   key={doc.id}
-                  value={doc.id}
+                  value={String(doc.id)}
                   onSelect={() => {
                     onChange(doc.id);
                     setOpen(false);
