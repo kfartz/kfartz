@@ -379,25 +379,6 @@ export default function InsertForm({ tableSlug, fields }: InsertFormProps) {
         </div>
       </form>
 
-      {/* <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}> */}
-      {/*   <DialogContent> */}
-      {/*     <DialogHeader> */}
-      {/*       <DialogTitle>Success</DialogTitle> */}
-      {/*       <DialogDescription>Record created successfully.</DialogDescription> */}
-      {/*     </DialogHeader> */}
-      {/*     <DialogFooter> */}
-      {/*       <Button */}
-      {/*         onClick={() => { */}
-      {/*           router.push(`/${tableSlug}`); */}
-      {/*           router.refresh(); */}
-      {/*         }} */}
-      {/*       > */}
-      {/*         Return to {tableSlug} */}
-      {/*       </Button> */}
-      {/*     </DialogFooter> */}
-      {/*   </DialogContent> */}
-      {/* </Dialog> */}
-
       <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
