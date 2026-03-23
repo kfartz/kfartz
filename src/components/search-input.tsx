@@ -141,6 +141,7 @@ export function SearchInput({ tableSlug, ...props }: SearchInputProps) {
           <Input
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            placeholder="Type to search"
             onFocus={handleFocus}
             onBlur={handleBlur}
             {...props}
