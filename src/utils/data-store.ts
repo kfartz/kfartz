@@ -63,21 +63,6 @@ const useDataStore = create<TDataState>((set) => {
         },
       })),
 
-    // clear: (tableSlug) =>
-    //   set((prev) => ({
-    //     data: {
-    //       ...prev.data,
-    //       [tableSlug]: {
-    //         ...prev.data[tableSlug],
-    //         records: [],
-    //       },
-    //     },
-    //     fetchedFully: {
-    //       ...prev.fetchedFully,
-    //       [tableSlug]: false,
-    //     },
-    //   })),
-
     setQuery: (tableSlug, query, parsedQuery) => {
       set((prev) => ({
         data: {

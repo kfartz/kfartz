@@ -47,6 +47,7 @@ export function SearchInput({ tableSlug, ...props }: SearchInputProps) {
   const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (!query && !value) return;
     const timeout = setTimeout(() => {
       const result = parse(value);
       setWarnings(result.warnings);
