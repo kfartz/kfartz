@@ -7,7 +7,7 @@ const courier_prime = Courier_Prime({ subsets: ["latin"], weight: ["700"] });
 
 export const metadata: Metadata = {
   title: "Kwartz",
-  description: "Crystallography messurement metadata manager",
+  description: "Crystallography measurement metadata manager",
   icons: {
     icon: "favicon.png",
   },
