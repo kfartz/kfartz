@@ -47,7 +47,12 @@ export function ResizableTable({ initQuery, slug }: TTableProps) {
       if (!data.isFetched) {
         setIsFetching(true);
         sdk
-          .find({ collection: slug, page: ++currentPage, limit: PageSize })
+          .find({
+            collection: slug,
+            page: ++currentPage,
+            limit: PageSize,
+            where: data.query === null ? undefined : data.query,
+          })
           .then((res) => {
             if (!res.hasNextPage) {
               setFetched(true);
@@ -58,7 +63,7 @@ export function ResizableTable({ initQuery, slug }: TTableProps) {
           });
       }
     }
-  }, [inView]);
+  }, [inView, data.isFetched, data.query]);
 
   const columns = useMemo(() => {
     if (data.records.length === 0) return [];

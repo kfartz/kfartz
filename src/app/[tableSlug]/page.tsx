@@ -1,4 +1,5 @@
 import { ResizableTable } from "@/components/resizable-table";
+import { SearchInput } from "@/components/search-input";
 import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import type { TTableSlug } from "@/types";
 import { payload, tables } from "@/utils/table";
@@ -23,6 +24,7 @@ export default async function TablePage({
     <div className="min-h-screen bg-background">
       {/* Main content area */}
       <main className="p-6">
+        <SearchInput tableSlug={tableSlug} />
         <ResizableTable
           slug={tableSlug}
           initQuery={{
