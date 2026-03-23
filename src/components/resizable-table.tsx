@@ -63,7 +63,7 @@ export function ResizableTable({ initQuery, slug }: TTableProps) {
           });
       }
     }
-  }, [inView, data.isFetched, data.query]);
+  }, [inView, data.query]);
 
   const columns = useMemo(() => {
     if (data.records.length === 0) return [];
