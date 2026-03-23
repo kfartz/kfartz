@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   reactStrictMode: true,
-  experimental: { cpus: 1 },
 };
 
 export default withPayload(nextConfig, { devBundleServerPackages: false });
