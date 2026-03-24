@@ -1,8 +1,7 @@
 import { ResizableTable } from "@/components/resizable-table";
 import { SearchInput } from "@/components/search-input";
-import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
 import type { TTableSlug } from "@/types";
-import { payload, tables } from "@/utils/table";
+import { payload } from "@/utils/table";
 import { PageSize } from "@/utils/vars";
 import type { ParamsT } from "./layout";
 
@@ -32,8 +31,6 @@ export default async function TablePage({
             isFetched: !initQuery.hasNextPage,
           }}
         />
-        {/* Dialogs */}
-        <TableSwitcherDialog tables={tables} currentTable={tables[tableSlug]} />
       </main>
     </div>
   );
