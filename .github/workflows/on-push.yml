@@ -30,7 +30,9 @@ jobs:
         run: bunx @commitlint/cli -V --from origin/master
 
       - name: Branch name validation
-        if: "!startsWith(github.ref_name, 'gh-readonly-queue/') && github.ref_name != 'master'"
+        if: ${{ !startsWith(github.ref_name, 'gh-readonly-queue/') 
+          && github.ref_name != 'master' 
+          && github.actor != 'dependabot[bot]' }}
         run: git branch --show-current | .github/branch-name-validation.ts
 
   build_check:
