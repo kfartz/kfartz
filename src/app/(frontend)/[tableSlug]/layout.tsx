@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import NavDropdown from "@/components/nav-dropdown";
-import { tableSlugs } from "@/utils/table";
+import { TableSwitcherDialog } from "@/components/table-switcher-dialog";
+import type { TTableSlug } from "@/types";
+import { tableSlugs, tables } from "@/utils/table";
 export type ParamsT = {
   tableSlug: string;
 };
@@ -43,6 +45,10 @@ export default async function TableLayout({
       </header>
       {/* Main content area */}
       {children}
+      <TableSwitcherDialog
+        tables={tables}
+        currentTable={tables[tableSlug as TTableSlug]}
+      />
     </div>
   );
 }
