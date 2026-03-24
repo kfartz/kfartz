@@ -1,7 +1,9 @@
 on: push
 name: On push
 run-name: "Build & Checks — ${{ github.ref_name }} by @${{ github.actor }}"
-
+permissions:
+  contents: read
+  
 jobs:
   quality_check:
     runs-on: ubuntu-latest
