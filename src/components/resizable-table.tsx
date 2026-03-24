@@ -70,7 +70,7 @@ export function ResizableTable({ initQuery, slug }: TTableProps) {
     return Object.keys(data.records[0]).map((key) =>
       columnHelper.accessor(key, {
         id: key,
-        header: key.replaceAll("_", " "),
+        header: key,
       }),
     );
   }, [data]);
@@ -125,7 +125,7 @@ export function ResizableTable({ initQuery, slug }: TTableProps) {
                 >
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} className="relative font-medium">
-                      <span className="capitalize">
+                      <span>
                         {/* We set the header string in the column definition above */}
                         {String(header.column.columnDef.header)}
                       </span>
