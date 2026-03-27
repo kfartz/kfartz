@@ -1,6 +1,6 @@
 FROM oven/bun:1.3.8-alpine
 
-RUN apk add --no-cache nodejs=22.22.0-r0
+RUN apk add --no-cache nodejs
 
 WORKDIR /app
 COPY . .
