@@ -1,0 +1,27 @@
+on:
+  push:
+    branches-ignore:
+      - master
+      - 'gh-readonly-queue/**'
+      - 'dependabot/**'
+
+name: Branch Validation
+run-name: "Branch Validation — ${{ github.ref_name }}"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github
+
+      - uses: oven-sh/setup-bun@v1
+        with: 
+          bun-version: latest
+
+      - name: Branch name validation
+        run: echo "${{ github.ref_name }}" | .github/branch-name-validation.ts
