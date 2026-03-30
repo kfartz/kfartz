@@ -1,6 +1,6 @@
 # Kfartz
 
-[![CI](https://github.com/kfartz/kfartz/actions/workflows/on-push.yml/badge.svg)](https://github.com/kfartz/kfartz/actions/workflows/on-push.yml)
+[![CI](https://github.com/kfartz/kfartz/actions/workflows/code-check.yml/badge.svg)](https://github.com/kfartz/kfartz/actions/workflows/code-check.yml)
 
 <p align="center">
     <img
