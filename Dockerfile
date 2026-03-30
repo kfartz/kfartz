@@ -23,4 +23,5 @@ ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-CMD ["./docker-cmd.sh"]
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["bun run payload migrate && bun run build && bun run start"]
