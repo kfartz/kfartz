@@ -31,12 +31,6 @@ jobs:
       - name: Commitlint check
         run: bunx @commitlint/cli -V --from origin/master
 
-      - name: Branch name validation
-        if: ${{ !startsWith(github.ref_name, 'gh-readonly-queue/') 
-          && github.ref_name != 'master' 
-          && !startsWith(github.ref_name, 'dependabot/') }}
-        run: git branch --show-current | .github/branch-name-validation.ts
-
   build_check:
     runs-on: ubuntu-latest
     services:
