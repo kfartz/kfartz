@@ -1,0 +1,214 @@
+"use client";
+
+import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
+import { cn } from "@/lib/utils";
+import type { TTable, TTableSlug, TTables } from "@/types";
+
+interface TableSwitcherDialogProps {
+  currentTable: TTable;
+  tables: TTables;
+}
+
+export function TableSwitcherDialog({
+  tables,
+  currentTable,
+}: TableSwitcherDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const router = useRouter();
+
+  // const [currentTable, setCurrentTable] = useCurrentTableContext();
+
+  const tablesArray = useMemo(() => {
+    return (Object.keys(tables) as TTableSlug[]).map(
+      (key): TTable => ({ name: key, desc: tables[key].desc }),
+    );
+  }, [tables]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const filteredTables = useMemo(() => {
+    return tablesArray.filter(
+      (table) =>
+        table.name.toLowerCase().includes(search.toLowerCase()) ||
+        table.desc.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [search, tablesArray]);
+
+  useEffect(() => {
+    // Find the first table that is not the current table
+    const firstSelectableIndex = filteredTables.findIndex(
+      (table) => table.name !== currentTable.name,
+    );
+
+    setSelectedIndex(firstSelectableIndex >= 0 ? firstSelectableIndex : 0);
+  }, [filteredTables, currentTable]);
+
+  // Reset search when dialog opens/closes
+  useEffect(() => {
+    if (!open) {
+      setSearch("");
+      setSelectedIndex(
+        filteredTables.findIndex((table) => table.name !== currentTable.name),
+      );
+    }
+  }, [open, filteredTables, currentTable]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => {
+          if (prev > filteredTables.length - 2) return prev;
+          if (filteredTables[prev + 1].name === currentTable.name) {
+            if (prev > filteredTables.length - 3) return prev;
+            else return prev + 2;
+          } else return prev + 1;
+        });
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => {
+          if (prev <= 0) return prev;
+          if (filteredTables[prev - 1].name === currentTable.name) {
+            if (prev - 2 < 0) return prev;
+            else return prev - 2;
+          } else return prev - 1;
+        });
+      } else if (e.key === "Enter" && filteredTables[selectedIndex]) {
+        e.preventDefault();
+        console.log(tablesArray[selectedIndex]);
+        router.push(`/${filteredTables[selectedIndex].name}`);
+        // setCurrentTable(filteredTables[selectedIndex]);
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, filteredTables, selectedIndex, currentTable, router, tablesArray]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-137.5 p-0 gap-0">
+        <DialogHeader className="px-4 pt-4 pb-3 border-b border-border">
+          <DialogTitle>Table picker</DialogTitle>
+          <DialogDescription>
+            Search and switch between available tables
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Search */}
+        <div className="p-4 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search tables..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              className="pl-9 bg-muted/50"
+              autoFocus
+            />
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="max-h-75 overflow-y-auto">
+          {filteredTables.length === 0 ? (
+            <div className="py-8 text-center text-muted-foreground text-sm">
+              No tables found
+            </div>
+          ) : (
+            <div className="p-2">
+              {filteredTables.map((table, index) => {
+                const isCurrent = currentTable.name === table.name;
+                return (
+                  <button
+                    type="button"
+                    key={table.name}
+                    onClick={() => {
+                      router.push(`/${filteredTables[selectedIndex].name}`);
+                      // setCurrentTable(table);
+                      setOpen(false);
+                    }}
+                    onMouseMove={() => !isCurrent && setSelectedIndex(index)}
+                    className={cn(
+                      "w-full flex items-start gap-3 px-3 py-2.5 rounded-md text-left transition-colors",
+                      selectedIndex === index &&
+                        "bg-accent text-accent-foreground",
+                      isCurrent && "bg-primary/10",
+                    )}
+                  >
+                    {/* <img */}
+                    {/*   src="/path/to/table-icon.svg" */}
+                    {/*   alt="Table" */}
+                    {/*   className="h-4 w-4 mt-0.5 flex-shrink-0" */}
+                    {/* /> */}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">{table.name}</div>
+                      <div className="text-xs text-muted-foreground line-clamp-1">
+                        {table.desc}
+                      </div>
+                    </div>
+                    {isCurrent && (
+                      <div className="text-xs text-primary font-medium">
+                        Current
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-border bg-muted/30">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center gap-4">
+              <span>
+                <Kbd>↑↓</Kbd>
+                Navigate
+              </span>
+              <span>
+                <Kbd>↵</Kbd>
+                Select
+              </span>
+            </div>
+            <span>
+              <Kbd>Esc</Kbd> Close
+            </span>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
