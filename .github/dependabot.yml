@@ -14,7 +14,7 @@ updates:
           - "patch"
           - "minor"
         exclude-patterns:
-          - "biomejs"
+          - "@biomejs/biome"
 
     commit-message:
       prefix: "chore"
