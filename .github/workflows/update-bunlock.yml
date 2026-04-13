@@ -1,0 +1,32 @@
+name: Update bun.lock
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  bun-lock:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with: 
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install deps (regenerates bun.lock)
+        run: bun install
+
+      - name: Commit bun.lock if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add bun.lock
+          git diff --cached --quiet || {
+          git commit --amend
+          git push --force-with-lease
+          }
