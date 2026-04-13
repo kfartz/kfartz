@@ -28,5 +28,6 @@ jobs:
           git add bun.lock
           git diff --cached --quiet || {
           git commit --amend --no-edit
+          git rebase master
           git push --force-with-lease
           }
