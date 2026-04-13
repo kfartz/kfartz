@@ -1,0 +1,59 @@
+on: push
+name: Code Check
+run-name: "Build & Checks — ${{ github.ref_name }} by @${{ github.actor }}"
+permissions:
+  contents: read
+  
+jobs:
+  quality_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: oven-sh/setup-bun@v1
+        with: 
+          bun-version: latest
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install deps
+        run: bun i --dev
+
+      - name: Linting check
+        run: bun lint
+
+      - name: Formatting check
+        run: bunx @biomejs/biome format
+      
+      - name: Fetch origin/master
+        run: git fetch origin master
+
+      - name: Commitlint check
+        run: bunx @commitlint/cli -V --from origin/master
+
+  build_check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_PASSWORD: password
+        ports: ["5432:5432"]
+    env:
+      PAYLOAD_SECRET: build
+      DATABASE_URI: postgres://postgres:password@localhost:5432/build
+    steps:
+      - uses: oven-sh/setup-bun@v2
+        with: 
+          bun-version: latest
+
+      - uses: actions/checkout@v5
+
+      - name: Install deps
+        run: bun i
+
+      - name: Run migrations
+        run: bun run payload migrate
+
+      - name: Build
+        run: bun run build
