@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+    groups:
+      npm:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
+
+    commit-message:
+      prefix: "chore"
+      include: "scope"
