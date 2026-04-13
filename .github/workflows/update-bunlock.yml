@@ -27,7 +27,6 @@ jobs:
           git config user.email "github-actions@github.com"
           git add bun.lock
           git diff --cached --quiet || {
-          git commit --amend --no-edit
-          git rebase master
-          git push --force-with-lease
+          git commit -m "chore: update bun.lock"
+          git push origin HEAD:${{ github.head_ref }}
           }
